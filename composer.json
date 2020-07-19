@@ -22,7 +22,7 @@
             "role": "Developer"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "1.0",
     "prefer-stable": true,
     "require": {
         "php": "^7.2.5",
