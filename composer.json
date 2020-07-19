@@ -1,0 +1,34 @@
+{
+    "name": "nicollas/htdocs",
+    "description": "\u0016A small CRUD project designed to assist daily routines and speed up the process of communicating with the database.",
+    "keywords": [
+        "SimplePHP",
+        "CRUD",
+        "PHPCRUD",
+        "CRUDPHP",
+        "Database",
+        "Table",
+        "Create",
+        "Read",
+        "Update",
+        "Delete"
+    ],
+    "homepage": "https://www.nicollas.site",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nícollas Silva",
+            "email": "lyod.hp@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.2",
+        "ext-pdo": "*"
+    },
+    "autoload": {
+    	"psr-4": {
+    		"Source\\": "Source/"
+    	}
+    }
+}
