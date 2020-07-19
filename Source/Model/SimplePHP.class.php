@@ -4,12 +4,15 @@ namespace Source\Model;
 
 use Source\Root\Connection;
 use PDO;
+use PDOException;
+use Source\Model\CRUD as Actions;
 
 /**
  * Class SimplePHP
  * @package NicollasSilva\SimplePHP
  */
 class SimplePHP extends Connection {
+    use Actions;
 
     /** @return completeQuery */
     protected $sentence = '';
@@ -32,6 +35,15 @@ class SimplePHP extends Connection {
     /** @return tableToDatabase */
     protected $table;
 
+    /** @var dataFetch */
+    protected $data;
+
+    /** @var dataFetchType */
+    protected $type;
+
+    /** @var exceptsParamsToQuery */
+    public $excepts = [];
+
     /** 
      * @return attributesValue
      */
@@ -51,6 +63,13 @@ class SimplePHP extends Connection {
     public function where($condition, $value): SimplePHP {
 
         $this->where = "WHERE " . (mb_strlen($this->where > 6) ? "&& {$condition} = '{$value}'" : "{$condition} = '{$value}'");
+        return $this;
+
+    }
+
+    public function only(array $params): SimplePHP {
+
+        $params !== null ? $this->params = implode($params, ',') : $this->params = '*';
         return $this;
 
     }
@@ -83,12 +102,49 @@ class SimplePHP extends Connection {
 
     }
 
+    public function asAttribute(bool $bool = false): SimplePHP {
+
+        $this->type = $bool;
+        return $this;
+
+    }
+
+    public function except(array $deniable) {
+
+            $this->excepts = $deniable;
+
+        return $this;
+
+    }
+
+    private function deny() {
+
+        if(!empty($this->excepts)) {
+            foreach($this->excepts as $except) {
+                if(isset($this->data[$except])) unset($this->data[$except]);
+            }
+        }
+
+    }
+
     public function execute() {
 
-        $execute = $this->conn->query("SELECT {$this->params} FROM {$this->table} {$this->where} {$this->order} {$this->limit} {$this->offset}");
-        return $execute->rowCount() > 1 ? 
-                $execute->fetchAll(PDO::FETCH_ASSOC) :
-                $execute->fetch(PDO::FETCH_ASSOC);
+        try {
+            $execute = $this->conn->query("SELECT {$this->params} FROM {$this->table} {$this->where} {$this->order} {$this->limit} {$this->offset}");
+            $execute->rowCount() > 1 ? 
+                    $this->data = ($this->type ? $execute->fetchAll(PDO::FETCH_CLASS, static::class) : $execute->fetchAll(PDO::FETCH_ASSOC)) :
+                    $this->data = ($this->type ? $execute->fetchObject(static::class) : $execute->fetch(PDO::FETCH_ASSOC));
+            self::deny();
+            return $this->data;
+        } catch(PDOException $exc) {
+            return $exc->getMessage();
+        }
+
+    }
+
+    public function save() {
+
+        
 
     }
 
