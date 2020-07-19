@@ -9,43 +9,44 @@ use Source\Model\CRUD as Actions;
 
 /**
  * Class SimplePHP
- * @package NicollasSilva\SimplePHP
+ * @package nicollassilva\SimplePHP
  */
 class SimplePHP extends Connection {
     use Actions;
 
-    /** @return completeQuery */
+    /** @var string */
     protected $sentence = '';
 
-    /** @var offsetToQuery */
+    /** @var int */
     protected $offset;
 
-    /** @var orderByToQuery */
+    /** @var string */
     protected $order;
 
-    /** @var paramsToQuery */
+    /** @var string */
     protected $params = '*';
 
-    /** @var whereToQuery */
+    /** @var string */
     protected $where;
 
-    /** @var limitToQuery */
+    /** @var int */
     protected $limit;
 
-    /** @return tableToDatabase */
+    /** @var string */
     protected $table;
 
-    /** @var dataFetch */
+    /** @var object|null */
     protected $data;
 
-    /** @var dataFetchType */
+    /** @var object|array */
     protected $type;
 
-    /** @var exceptsParamsToQuery */
+    /** @var string */
     public $excepts = [];
 
-    /** 
-     * @return attributesValue
+    /**
+     * Get tablename of children model
+     * @param string|null $tableName
      */
     function __construct(?string $tableName) {
 
@@ -53,6 +54,10 @@ class SimplePHP extends Connection {
 
     }
 
+    /**
+     * @param int|null $id
+     * @return SimplePHP
+     */
     public function find(?int $id = null): SimplePHP {
 
         is_int($id) ? self::where('id', $id) : null;
@@ -60,13 +65,22 @@ class SimplePHP extends Connection {
 
     }
 
-    public function where($condition, $value): SimplePHP {
+    /**
+     * @param string $condition
+     * @param string $value
+     * @return SimplePHP|null
+     */
+    public function where(string $condition, string $value): SimplePHP {
 
         $this->where = "WHERE " . (mb_strlen($this->where > 6) ? "&& {$condition} = '{$value}'" : "{$condition} = '{$value}'");
         return $this;
 
     }
 
+    /**
+     * @param array $params
+     * @return SimplePHP|null
+     */
     public function only(array $params): SimplePHP {
 
         $params !== null ? $this->params = implode($params, ',') : $this->params = '*';
@@ -74,6 +88,10 @@ class SimplePHP extends Connection {
 
     }
 
+    /**
+     * @param int $limit
+     * @return SimplePHP|null
+     */
     public function limit(int $limit): SimplePHP {
         
         $this->limit = is_int($limit) ? "LIMIT $limit" : null;
@@ -81,6 +99,10 @@ class SimplePHP extends Connection {
 
     }
 
+    /**
+     * @param int $offset
+     * @return SimplePHP|null
+     */
     public function offset(int $offset): SimplePHP {
         
         $this->offset = is_int($offset) ? "OFFSET $offset" : null;
@@ -88,6 +110,10 @@ class SimplePHP extends Connection {
 
     }
 
+    /**
+     * @param string $order
+     * @return SimplePHP|null
+     */
     public function orderBy(string $order): SimplePHP {
         
         $this->order = "ORDER BY {$order}";
@@ -95,13 +121,21 @@ class SimplePHP extends Connection {
 
     }
 
-    public function __call($name, $arguments) {
+    /**
+     * @param string $name
+     * @param mixed $arguments
+     * @return string error
+     */
+    public function __call(string $name, $arguments) {
 
-        echo "This method does not exist at the SimplePHP: \"<b>{$name}</b>\".";
-        exit();
+        return "This method does not exist at the SimplePHP: \"<b>{$name}</b>\".";
 
     }
 
+    /**
+     * @param bool $bool
+     * @return SimplePHP
+     */
     public function asAttribute(bool $bool = false): SimplePHP {
 
         $this->type = $bool;
@@ -109,6 +143,10 @@ class SimplePHP extends Connection {
 
     }
 
+    /**
+     * @param array $deniable
+     * @return SimplePHP
+     */
     public function except(array $deniable) {
 
             $this->excepts = $deniable;
@@ -117,6 +155,9 @@ class SimplePHP extends Connection {
 
     }
 
+    /**
+     * Method to destroy @except method
+     */
     private function deny() {
 
         if(!empty($this->excepts)) {
@@ -127,6 +168,9 @@ class SimplePHP extends Connection {
 
     }
 
+    /**
+     * @return array|object|null
+     */
     public function execute() {
 
         try {
