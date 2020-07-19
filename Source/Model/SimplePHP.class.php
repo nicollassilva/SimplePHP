@@ -9,7 +9,7 @@ use Source\Model\CRUD as Actions;
 
 /**
  * Class SimplePHP
- * @package nicollassilva\SimplePHP
+ * @package NicollasSilva\SimplePHP
  */
 class SimplePHP extends Connection {
     use Actions;
@@ -29,7 +29,7 @@ class SimplePHP extends Connection {
     /** @var string */
     protected $where;
 
-    /** @var int */
+    /** @var string */
     protected $limit;
 
     /** @var string */
@@ -38,10 +38,10 @@ class SimplePHP extends Connection {
     /** @var object|null */
     protected $data;
 
-    /** @var object|array */
+    /** @var bool */
     protected $type;
 
-    /** @var string */
+    /** @var array */
     public $excepts = [];
 
     /**
@@ -94,7 +94,7 @@ class SimplePHP extends Connection {
      */
     public function limit(int $limit): SimplePHP {
         
-        $this->limit = is_int($limit) ? "LIMIT $limit" : null;
+        $this->limit = "LIMIT $limit";
         return $this;
 
     }
@@ -105,7 +105,7 @@ class SimplePHP extends Connection {
      */
     public function offset(int $offset): SimplePHP {
         
-        $this->offset = is_int($offset) ? "OFFSET $offset" : null;
+        $this->offset = "OFFSET $offset";
         return $this;
 
     }
@@ -169,7 +169,7 @@ class SimplePHP extends Connection {
     }
 
     /**
-     * @return array|object|null
+     * @return array|mixed|null
      */
     public function execute() {
 
