@@ -90,37 +90,37 @@ class User extends SimplePHP {
 
 use Models\User;
 
-$user = new User();
+$userModel= new User();
 
 /** find all users */
-$user = $find->find()->execute();
+$user = $userModel->find()->execute();
 
 /** find user by id */
-$user = $find->find(5)->execute();
+$user = $userModel->find(5)->execute();
 
 /** find user with one condition */
-$user = $find->find()->where('email', 'example@gmail.com')->execute();
+$user = $userModel->find()->where('email', 'example@gmail.com')->execute();
 
 /** find user with + conditions */
-$user = $find->find()->where('name', 'Nícollas Silva')->where('email', 'nicollas@gmail.com')->execute();
+$user = $userModel->find()->where('name', 'Nícollas Silva')->where('email', 'nicollas@gmail.com')->execute();
 
 /** find users with limit */
-$user = $find->find()->limit(5)->execute();
+$user = $userModel->find()->limit(5)->execute();
 
 /** find users with limit & offset */
-$user = $find->find()->limit(5)->offset(5)->execute();
+$user = $userModel->find()->limit(5)->offset(5)->execute();
 
 /** find users with orderBy */
-$user = $find->find()->orderBy('id ASC')->execute();
+$user = $userModel->find()->orderBy('id ASC')->execute();
 
 /** find users and return results as attributes. [| Example: $user->name instead of $user['name'] |] */
-$user = $find->find()->asAttribute(true)->execute(); 
+$user = $userModel->find()->asAttribute(true)->execute(); 
 
 /** find users with specific columns. */
-$user = $find->find()->only(['name', 'id', 'email'])->execute();
+$user = $userModel->find()->only(['name', 'id', 'email'])->execute();
 
 /** find users creating exceptions in columns. */
-$user = $find->find()->except(['password'])->execute();
+$user = $userModel->find()->except(['password'])->execute();
 
 ```
 
