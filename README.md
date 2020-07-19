@@ -1,5 +1,13 @@
 # Simple PHP - Simple and easy CRUD for PHP projects
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nicollassilva/SimplePHP/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/nicollassilva/SimplePHP/?branch=master)
+[![PHP from Packagist](https://img.shields.io/packagist/php-v/nicollassilva/simplephp.svg?style=flat-square)](https://packagist.org/packages/nicollassilva/simplephp)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
+[![Latest Version](https://img.shields.io/github/release/nicollassilva/simplephp.svg?style=flat-square)](https://github.com/nicollassilva/simplephp/releases)
+[![Build Status](https://scrutinizer-ci.com/g/nicollassilva/SimplePHP/badges/build.png?b=master)](https://scrutinizer-ci.com/g/nicollassilva/SimplePHP/build-status/master)
+[![Code Intelligence Status](https://scrutinizer-ci.com/g/nicollassilva/SimplePHP/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
+[![Total Downloads](https://img.shields.io/packagist/dt/nicollassilva/simplephp.svg?style=flat-square)](https://packagist.org/packages/nicollassilva/simplephp)
+
 A small CRUD project developed to assist daily routines and speed up the process of communicating with the database with security and transparency.
 
 ## Getting Started
