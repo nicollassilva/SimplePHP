@@ -12,7 +12,7 @@ use PDO;
  */
 trait Config {
 
-    /** @return ConfigDatabase */
+    /** @var array $config */
     protected $config = [
         "driver" => "mysql",
         "hostname" => "localhost",

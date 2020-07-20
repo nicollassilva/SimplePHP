@@ -13,29 +13,27 @@ use PDOException;
 class Connection {
     use Config;
 
-    /** @var PDO */
+    /** @var object|null */
     protected $conn;
 
-    /** @var PDOException */
+    /** @var array */
     protected $exception;
 
-    /** @var TableName */
+    /** @var string */
     protected $table;
     
     /**
-     * @param ExecutePDO
+     * Connection construtor
      */
     function __construct() { self::PDO(); }
 
     /**
-     * @return PDOConnection
+     * Function connect PDO
      */
-    public function PDO() {
-
+    public function PDO()
+    {
         if(empty($this->conn)) {
-        
             try {
-
                 $this->conn = new PDO(
                     $this->config['driver'] . ":host=" .
                     $this->config['hostname'] . ";charset=" .
@@ -46,20 +44,14 @@ class Connection {
                     $this->config['password'],
                     $this->config['options']
                 );
-
             } catch(PDOException $exception) {
-
                 echo json_encode(
                     ['error' => 
                         [
                             'message' => $exception->getMessage()
                         ]
-                    ]);
-    
+                ]);
             }
-
         }
-
     }
-
 }
