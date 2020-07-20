@@ -116,7 +116,7 @@ $user = $userModel->find()->limit(5)->offset(5)->execute();
 $user = $userModel->find()->orderBy('id ASC')->execute();
 
 /** find users and return results as attributes. [| Example: $user->name instead of $user['name'] |] */
-$user = $userModel->find()->asAttribute(true)->execute(); 
+$user = $userModel->find()->execute(true); 
 
 /** find users with specific columns. */
 $user = $userModel->find()->only(['name', 'id', 'email'])->execute();
@@ -126,7 +126,7 @@ $user = $userModel->find()->except(['password'])->execute();
 
 ```
 
-* **Note:** _except()_ method does not work chained with the _asAttribute(true)_ method
+* **Note:** _except()_ method does not work chained with the _execute(true)_ method, only _execute()_ without parameter true.
 
 #### destroy
 
