@@ -96,7 +96,7 @@ After all the previous steps, create an index.php at the root of the project giv
 use Models\User;
 
     $userModel = new User();
-    $user = $user->find()->execute();
+    $user = $userModel->find()->execute();
 ```
 
 ## Documentation
