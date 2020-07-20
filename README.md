@@ -20,8 +20,8 @@ Some precautions and step-by-step instructions for you to download and install t
 To be able to use **SimplePHP** you will need to have:
 
 ```
-PHP **^7.2.5**
-EXT-PDO **ANY**
+PHP ^7.2.5
+EXT-PDO *
 ```
 
 ### Installing
@@ -29,19 +29,13 @@ EXT-PDO **ANY**
 SimplePHP can be installed via **composer.json** or via the **command terminal**:
 
 ```
-composer require nicollassilva/simplephp
+composer require nicollassilva/simplephp dev-master
 ```
 
 or **composer.json**:
 
 ```
-"nicollassilva/simplephp": "^1.2"
-```
-
-* **Note:** If you install the package and when using it by the namespace, the composer does not find the SimplePHP class, run in the terminal:
-
-```
-composer dump -o
+"nicollassilva/simplephp": "dev-master"
 ```
 
 ## Documentation
@@ -59,7 +53,7 @@ protected $config = [
         "port" => 3306,
         "username" => "root",
         "password" => "",
-        "database" => "",
+        "database" => "marketplace",
         "options" => [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_CASE => PDO::CASE_NATURAL,
@@ -70,21 +64,22 @@ protected $config = [
 
 ### Example Model
 
-You will need to inherit your model from the SimplePHP class, and in the magic constructor method, call the parent constructor with the name of the table for the referred model.
+You will need to inherit your model from the SimplePHP class, and in the magic constructor method, call the parent constructor with the name of the table for the referred model, and a primary key.
 
 ```php
-namespace Model;
+namespace Models;
 
 use SimplePHP\Model\SimplePHP;
 
 class User extends SimplePHP {
-    /**
-     * @param string $table
-     * User constructor
-     */
+
     function __construct()
     {
-        parent::__construct('users');
+        /**
+         * @param string Table Name
+         * @param string Primary Key
+         */
+        parent::__construct('users', 'id');
     }
 }
 ```
@@ -97,7 +92,7 @@ class User extends SimplePHP {
 
 use Models\User;
 
-$userModel = new User();
+$userModel= new User();
 
 /** find all users */
 $user = $userModel->find()->execute();
