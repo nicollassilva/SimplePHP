@@ -38,9 +38,7 @@ or **composer.json**:
 "nicollassilva/simplephp": "^1.2"
 ```
 
-## Documentation
-
-### Connection
+#### Connection
 
 To configure the connection to the database, you must access: **Source\Root\Config.php**.
 Example of the file to be found:
@@ -62,9 +60,10 @@ protected $config = [
     ];
 ```
 
-### Example Model
+#### Your model
 
-You will need to inherit your model from the SimplePHP class, and in the magic constructor method, call the parent constructor with the name of the table for the referred model, and a primary key.
+After completing the database configuration, create a folder at the root of the project where your **Models** will be and create the class. 
+* You should extend and use the SimplePHP class namespace, as in the example:
 
 ```php
 namespace Models;
@@ -83,6 +82,24 @@ class User extends SimplePHP {
     }
 }
 ```
+
+* You will need to inherit your model from the SimplePHP class, and in the magic constructor method, call the parent constructor with the name of the table for the referred model, and a primary key.
+
+#### First use
+
+After all the previous steps, create an index.php at the root of the project giving a **require in the composer autoload and in your model class**, after that, instantiate your model and you can start using SimplePHP. Below is an example:
+
+```php
+    require "vendor/autoload.php";
+    require "models/user.php";
+
+use Models\User;
+
+    $userModel = new User();
+    $user = $user->find()->execute();
+```
+
+## Documentation
 
 ### Methods
 
