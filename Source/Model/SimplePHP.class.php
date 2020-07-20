@@ -1,11 +1,11 @@
 <?php
 
-namespace Source\Model;
+namespace SimplePHP\Model;
 
-use Source\Root\Connection;
+use SimplePHP\Root\Connection;
 use PDO;
 use PDOException;
-use Source\Model\CRUD as Actions;
+use SimplePHP\Model\CRUD as Actions;
 
 /**
  * Class SimplePHP

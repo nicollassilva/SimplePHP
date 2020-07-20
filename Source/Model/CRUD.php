@@ -1,6 +1,6 @@
 <?php
 
-namespace Source\Model;
+namespace SimplePHP\Model;
 
 use PDO;
 use PDOException;

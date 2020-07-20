@@ -1,6 +1,6 @@
 <?php
 
-namespace Source\Root;
+namespace SimplePHP\Root;
 
 use PDO;
 use PDOException;
