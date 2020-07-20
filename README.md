@@ -133,16 +133,52 @@ $user = $userModel->find()->except(['password'])->execute();
 ```php
 use Models\User;
 
-$modelUser = new User();
-$user = $modelUser->find(3)->asAttribute(true)->execute();
+$userModel = new User();
+$user = $userModel->find(3)->execute(true);
 
     /** @return Exception|bool */
     if($user->destroy()) {
-        echo "Excluído com sucesso!";
+        echo "Success delete!";
     }
 ```
 
 * **Note:** To delete an information, you need to be aware that there is a reference to that information, that is, the primary key.
+
+#### save (update)
+
+```php
+use Models\User;
+
+$userModel = new User();
+$user = $userModel->find(5)->execute(true);
+$user->name = "Other name";
+$user->email = "anyemail@gmail.com";
+
+    /** @return bool */
+    if($user->save()) {
+        echo "Success!";
+    }
+```
+
+* **Note:** To save an information, you need to be aware that there is a reference to that information, that is, the primary key.
+* **OBS:** You can use the only() method to pull only the necessary information, but when editing, you can pass any column that exists in the database table and the system will proceed to treat and insert it. Example:
+
+```php
+use Models\User;
+
+$userModel = new User();
+$user = $userModel->find(8)->only(['id', 'name'])->execute(true);
+$user->name = "Russian Gabolev";
+
+$user->email = "anyemail@gmail.com";
+/** This informations was not called from the database, but they exist. */
+$user->updated_at = time();
+
+    /** @return bool */
+    if($user->save()) {
+        echo "Success!";
+    }
+```
 
 ## Authors
 
