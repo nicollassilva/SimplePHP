@@ -13,7 +13,7 @@ trait CRUD {
             $sql = $this->conn->prepare("DELETE FROM {$this->table} WHERE {$this->primary} = :primary");
             $sql->bindParam(':primary', $primary);
             return $sql->execute();
-        } catch(PDOException $exception) {
+        } catch (PDOException $exception) {
             return null;
         }
     }
