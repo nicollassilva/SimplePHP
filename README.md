@@ -29,13 +29,13 @@ EXT-PDO *
 SimplePHP can be installed via **composer.json** or via the **command terminal**:
 
 ```
-composer require nicollassilva/simplephp dev-master
+composer require nicollassilva/simplephp
 ```
 
 or **composer.json**:
 
 ```
-"nicollassilva/simplephp": "dev-master"
+"nicollassilva/simplephp": "^1.2"
 ```
 
 ## Documentation
