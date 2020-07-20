@@ -20,8 +20,8 @@ Some precautions and step-by-step instructions for you to download and install t
 To be able to use **SimplePHP** you will need to have:
 
 ```
-PHP **^7.2.5**
-EXT-PDO **ANY**
+PHP ^7.2.5
+EXT-PDO *
 ```
 
 ### Installing
@@ -64,21 +64,23 @@ protected $config = [
 
 ### Example Model
 
-You will need to inherit your model from the SimplePHP class, and in the magic constructor method, call the parent constructor with the name of the table for the referred model.
+You will need to inherit your model from the SimplePHP class, and in the magic constructor method, call the parent constructor with the name of the table for the referred model, and a primary key.
 
 ```php
-namespace Model;
+namespace Models;
 
 use SimplePHP\Model\SimplePHP;
 
 class User extends SimplePHP {
 
-    function __construct() {
-    
-        parent::__construct('users');
-        
+    function __construct()
+    {
+        /**
+         * @param string Table Name
+         * @param string Primary Key
+         */
+        parent::__construct('users', 'id');
     }
-    
 }
 ```
 
