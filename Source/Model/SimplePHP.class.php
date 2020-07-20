@@ -130,16 +130,6 @@ class SimplePHP extends Connection {
     }
 
     /**
-     * @param bool $bool
-     * @return SimplePHP
-     */
-    public function asAttribute(bool $bool = false): SimplePHP
-    {
-        $this->type = $bool;
-        return $this;
-    }
-
-    /**
      * @param array $deniable
      * @return SimplePHP
      */
@@ -149,6 +139,11 @@ class SimplePHP extends Connection {
         return $this;
     }
 
+    /**
+     * @param $prop
+     * @param $value
+     * @return null
+     */
     public function __set($prop, $value)
     {
         if (empty($this->data)) {
@@ -159,12 +154,21 @@ class SimplePHP extends Connection {
     }
 
     /**
-     * @param $name
+     * @param $attribute
      * @return bool
      */
     public function __isset($attribute): bool
     {
         return isset($this->data->$attribute);
+    }
+
+    /**
+     * @param $prop
+     * @return string|null
+     */
+    public function __get($prop)
+    {
+        return $this->data->$prop ?? null;
     }
 
     /**
@@ -176,22 +180,18 @@ class SimplePHP extends Connection {
             switch (!is_object($this->data) && $count = count($this->data)) {
                 case (!isset($this->data[0]) && !empty($this->data)):
                     foreach($this->excepts as $except) {
-                        if(isset($this->data[$except])) {
-                            unset($this->data[$except]);
-                        }
+                        if(isset($this->data[$except])) unset($this->data[$except]);
                     }
                     break;
                 case ($count >= 2 && isset($this->data[0])):
                     foreach($this->excepts as $except) {
                         for($i = 0; $i < $count; $i++) {
-                            if(isset($this->data[$i][$except])) {
-                                unset($this->data[$i][$except]);
-                            }
+                            if(isset($this->data[$i][$except])) unset($this->data[$i][$except]);
                         }
                     }
                     break;
-                default:
-                    return [];
+            default:
+                return [];
             }
         }
     }
@@ -199,27 +199,50 @@ class SimplePHP extends Connection {
     /**
      * @return array|mixed
      */
-    public function execute()
+    public function execute(bool $type = false)
     {
+        $this->type = $type;
         try {
             $execute = $this->conn->query("SELECT {$this->params} FROM {$this->table} {$this->where} {$this->order} {$this->limit} {$this->offset}");
             $execute->rowCount() > 1 ? 
-                    $this->data = ($this->type ? $execute->fetchAll(PDO::FETCH_CLASS, static::class) : $execute->fetchAll(PDO::FETCH_ASSOC)) : $this->data = ($this->type ? $execute->fetchObject(static::class) : $execute->fetch(PDO::FETCH_ASSOC));
+                    $this->data = ($this->type ? $execute->fetchAll(PDO::FETCH_CLASS, static::class) : $execute->fetchAll(PDO::FETCH_ASSOC)) :
+                    $this->data = ($this->type ? $execute->fetchObject(static::class) : $execute->fetch(PDO::FETCH_ASSOC));
             $this->deny();
             return $this->data;
-        } catch (PDOException $exc) {
+        } catch(PDOException $exc) {
             return $exc->getMessage();
         }
     }
 
     /**
-     * @return Exception|bool
+     * @return Exception|bool(true)
      */
-    public function destroy() {
+    public function destroy()
+    {
         $primary = $this->primary;
-        if (!isset($this->data->$primary)) {
+        if(!isset($this->data->$primary)) {
             throw new Exception("|| Índice primário não encontrado: {$primary} ||");
         }
+
         return $this->delete($this->data->$primary);
+    }
+
+    /**
+     * @return Exception|bool
+     */
+    public function save()
+    {
+        $primary = $this->primary;
+        $data = json_decode(json_encode($this->data), true);
+        if(empty($primary) || !isset($data[$primary])) {
+            throw new Exception("|| Índice primário não encontrado: {$primary} ||");
+        }
+
+        $otherPrimary = $data[$primary];
+        unset($data[$primary]);
+        $parameters = implode(',', array_keys($data));
+        $values = array_values($data);
+
+        return $this->update($parameters, $values, $otherPrimary);
     }
 }
