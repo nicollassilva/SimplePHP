@@ -29,13 +29,19 @@ EXT-PDO **ANY**
 SimplePHP can be installed via **composer.json** or via the **command terminal**:
 
 ```
-composer require nicollassilva/simplephp dev-master
+composer require nicollassilva/simplephp
 ```
 
 or **composer.json**:
 
 ```
-"nicollassilva/simplephp": "dev-master"
+"nicollassilva/simplephp": "^1.2"
+```
+
+* **Note:** If you install the package and when using it by the namespace, the composer does not find the SimplePHP class, run in the terminal:
+
+```
+composer dump -o
 ```
 
 ## Documentation
@@ -53,7 +59,7 @@ protected $config = [
         "port" => 3306,
         "username" => "root",
         "password" => "",
-        "database" => "marketplace",
+        "database" => "",
         "options" => [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_CASE => PDO::CASE_NATURAL,
@@ -72,13 +78,14 @@ namespace Model;
 use SimplePHP\Model\SimplePHP;
 
 class User extends SimplePHP {
-
-    function __construct() {
-    
+    /**
+     * @param string $table
+     * User constructor
+     */
+    function __construct()
+    {
         parent::__construct('users');
-        
     }
-    
 }
 ```
 
@@ -90,7 +97,7 @@ class User extends SimplePHP {
 
 use Models\User;
 
-$userModel= new User();
+$userModel = new User();
 
 /** find all users */
 $user = $userModel->find()->execute();
