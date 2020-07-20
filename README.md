@@ -1,4 +1,4 @@
-# Simple PHP - Simple and easy CRUD for PHP projects
+﻿# Simple PHP - Simple and easy CRUD for PHP projects
 
 [![Maintainer](http://img.shields.io/badge/maintainer-@nicollassilva-blue.svg?style=flat-square)](https://github.com/nicollassilva)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nicollassilva/SimplePHP/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/nicollassilva/SimplePHP/?branch=master)
@@ -126,7 +126,23 @@ $user = $userModel->find()->except(['password'])->execute();
 
 ```
 
-* **Note:** _except()_ method does not work chained with the _asAttribute(true)_ method 
+* **Note:** _except()_ method does not work chained with the _asAttribute(true)_ method
+
+#### destroy
+
+```php
+use Models\User;
+
+$modelUser = new User();
+$user = $modelUser->find(3)->asAttribute(true)->execute();
+
+    /** @return Exception|bool */
+    if($user->destroy()) {
+        echo "Excluído com sucesso!";
+    }
+```
+
+* **Note:** To delete an information, you need to be aware that there is a reference to that information, that is, the primary key.
 
 ## Authors
 

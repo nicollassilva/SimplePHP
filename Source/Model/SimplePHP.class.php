@@ -5,6 +5,8 @@ namespace SimplePHP\Model;
 use SimplePHP\Root\Connection;
 use PDO;
 use PDOException;
+use Exception;
+use stdClass;
 use SimplePHP\Model\CRUD as Actions;
 
 /**
@@ -147,27 +149,45 @@ class SimplePHP extends Connection {
         return $this;
     }
 
+    public function __set($prop, $value)
+    {
+        if (empty($this->data)) {
+            $this->data = new stdClass();
+        }
+
+        $this->data->$prop = $value;
+    }
+
+    /**
+     * @param $name
+     * @return bool
+     */
+    public function __isset($attribute): bool
+    {
+        return isset($this->data->$attribute);
+    }
+
     /**
      * Method to destroy @except method
      */
     private function deny()
     {
-        if (!empty($this->excepts)) {
+        if(!empty($this->excepts)) {
             switch (!is_object($this->data) && $count = count($this->data)) {
                 case (!isset($this->data[0]) && !empty($this->data)):
-                    foreach ($this->excepts as $except) {
-                        if (isset($this->data[$except])) unset($this->data[$except]);
+                    foreach($this->excepts as $except) {
+                        if(isset($this->data[$except])) unset($this->data[$except]);
                     }
                     break;
                 case ($count >= 2 && isset($this->data[0])):
-                    foreach ($this->excepts as $except) {
-                        for ($i = 0; $i < $count; $i++) {
-                            if (isset($this->data[$i][$except])) unset($this->data[$i][$except]);
+                    foreach($this->excepts as $except) {
+                        for($i = 0; $i < $count; $i++) {
+                            if(isset($this->data[$i][$except])) unset($this->data[$i][$except]);
                         }
                     }
                     break;
-                default:
-                    return [];
+            default:
+                return [];
             }
         }
     }
@@ -180,11 +200,23 @@ class SimplePHP extends Connection {
         try {
             $execute = $this->conn->query("SELECT {$this->params} FROM {$this->table} {$this->where} {$this->order} {$this->limit} {$this->offset}");
             $execute->rowCount() > 1 ? 
-                    $this->data = ($this->type ? $execute->fetchAll(PDO::FETCH_CLASS, static::class) : $execute->fetchAll(PDO::FETCH_ASSOC)) : $this->data = ($this->type ? $execute->fetchObject(static::class) : $execute->fetch(PDO::FETCH_ASSOC));
+                    $this->data = ($this->type ? $execute->fetchAll(PDO::FETCH_CLASS, static::class) : $execute->fetchAll(PDO::FETCH_ASSOC)) :
+                    $this->data = ($this->type ? $execute->fetchObject(static::class) : $execute->fetch(PDO::FETCH_ASSOC));
             $this->deny();
             return $this->data;
-        } catch (PDOException $exc) {
+        } catch(PDOException $exc) {
             return $exc->getMessage();
         }
+    }
+
+    /**
+     * @return Exception|bool
+     */
+    public function destroy() {
+        $primary = $this->primary;
+        if(!isset($this->data->$primary)) {
+            throw new Exception("|| Índice primário não encontrado: {$primary} ||");
+        }
+        return $this->delete($this->data->$primary);
     }
 }
