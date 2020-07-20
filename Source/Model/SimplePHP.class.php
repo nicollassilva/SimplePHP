@@ -167,14 +167,13 @@ class SimplePHP extends Connection {
                     }
                     break;
             default:
-                return null;
-                break;
+                return [];
             }
         }
     }
 
     /**
-     * @return array|mixed|null
+     * @return array|mixed
      */
     public function execute()
     {
@@ -183,21 +182,10 @@ class SimplePHP extends Connection {
             $execute->rowCount() > 1 ? 
                     $this->data = ($this->type ? $execute->fetchAll(PDO::FETCH_CLASS, static::class) : $execute->fetchAll(PDO::FETCH_ASSOC)) :
                     $this->data = ($this->type ? $execute->fetchObject(static::class) : $execute->fetch(PDO::FETCH_ASSOC));
-            self::deny();
+            $this->deny();
             return $this->data;
         } catch(PDOException $exc) {
             return $exc->getMessage();
         }
     }
-
-    public function save() {
-
-        if(isset($this->data[$this->primary])) {
-
-            self::update();
-
-        }
-
-    }
-
 }
