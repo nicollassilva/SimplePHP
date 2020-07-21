@@ -153,11 +153,12 @@ $user = $userModel->find()->execute(true);
 $user = $userModel->find()->only(['name', 'id', 'email'])->execute();
 
 /** find users creating exceptions in columns. */
-$user = $userModel->find()->except(['password'])->execute();
+$user = $userModel->find(5)->except(['password'])->execute();
 
 ```
 
 * **Note:** _except()_ method does not work chained with the _execute(true)_ method, only _execute()_ without parameter true.
+* **Note:** _except()_ method only works when looking for specific information, in multidimensional arrays it does not work. This will be fixed soon.
 
 #### destroy
 
