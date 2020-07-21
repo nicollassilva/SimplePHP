@@ -210,6 +210,36 @@ $user->updated_at = time();
         echo "Success!";
     }
 ```
+* **OBS2:** In case of failure, it will return the error code PDOException, if completed, it will return true.
+
+#### create (insert)
+
+```php
+use Models\User;
+
+    $userModel = new User();
+    $user = $userModel->request([
+        "name" => "Dr. Haylie Bahringer",
+        "email" => 'hayliebahringer@gmail.com', 
+        "password" => 123456 // Encrypt before sending to the database
+    ])->create();
+```
+
+it is also possible by passing a direct array
+
+```php
+use Models\User;
+
+    $userModel = new User();
+    $_POST = [
+        "name" => "Dr. Haylie Bahringer",
+        "email" => "hayliebahringer@gmail.com",
+        "password" => 123456 // Encrypt before sending to the database
+    ];
+    $user = $userModel->request($_POST)->create();
+```
+
+* **OBS2:** In case of failure, it will return the error code PDOException, if completed, it will return true.
 
 ## Authors
 
