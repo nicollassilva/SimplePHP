@@ -56,7 +56,7 @@ class SimplePHP extends Connection {
      * Get tablename of children model
      * @param string|null $tableName
      */
-    function __construct(?string $tableName, ?string $primaryKey)
+    function __construct(String $tableName, String $primaryKey)
     {
         parent::__construct(); $this->table = $tableName; $this->primary = $primaryKey;
     }
@@ -65,9 +65,9 @@ class SimplePHP extends Connection {
      * @param int|null $id
      * @return SimplePHP|null
      */
-    public function find(?int $id = null): ?SimplePHP
+    public function find(int $id = null): ?SimplePHP
     {
-        is_int($id) ? self::where('id', $id) : null;
+        is_int($id) ? $this->where('id', $id) : null;
         return $this;
     }
 
@@ -76,7 +76,7 @@ class SimplePHP extends Connection {
      * @param string $value
      * @return SimplePHP|null
      */
-    public function where(string $condition, string $value): ?SimplePHP
+    public function where(String $condition, String $value): ?SimplePHP
     {
         $this->where = "WHERE " . (mb_strlen($this->where > 6) ? "&& {$condition} = '{$value}'" : "{$condition} = '{$value}'");
         return $this;
@@ -86,9 +86,9 @@ class SimplePHP extends Connection {
      * @param array $params
      * @return SimplePHP|null
      */
-    public function only(array $params): ?SimplePHP
+    public function only(Array $params): ?SimplePHP
     {
-        $params !== null ? $this->params = implode($params, ',') : $this->params = '*';
+        $this->params = $params;
         return $this;
     }
 
@@ -116,7 +116,7 @@ class SimplePHP extends Connection {
      * @param string $order
      * @return SimplePHP|null
      */
-    public function orderBy(string $order): ?SimplePHP
+    public function orderBy(String $order): ?SimplePHP
     {
         $this->order = "ORDER BY {$order}";
         return $this;
@@ -127,7 +127,7 @@ class SimplePHP extends Connection {
      * @param mixed $arguments
      * @return string error
      */
-    public function __call(string $name, $arguments)
+    public function __call(String $name, $arguments)
     {
         return "This method does not exist at the SimplePHP: \"<b>{$name}</b>\".";
     }
@@ -136,7 +136,7 @@ class SimplePHP extends Connection {
      * @param array $deniable
      * @return SimplePHP|null
      */
-    public function except(array $deniable)
+    public function except(Array $deniable)
     {
         $this->excepts = $deniable;
         return $this;
@@ -221,7 +221,7 @@ class SimplePHP extends Connection {
     }
 
     /**
-     * @return Exception|bool(true)
+     * @return \Exception|bool(true)
      */
     public function destroy()
     {
@@ -234,7 +234,7 @@ class SimplePHP extends Connection {
     }
 
     /**
-     * @return Error|bool
+     * @return Error|PDOException|bool
      */
     public function save()
     {
