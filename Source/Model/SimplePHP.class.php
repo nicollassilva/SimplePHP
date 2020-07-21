@@ -44,14 +44,14 @@ class SimplePHP extends Connection {
     /** @var bool */
     protected $type;
 
-    /** @var array */
-    protected $excepts = [];
-
     /** @var string */
     protected $primary;
 
     /** @var array */
     protected $request = [];
+
+    /** @var array */
+    public $excepts = [];
 
     /**
      * Get tablename of children model
@@ -89,7 +89,7 @@ class SimplePHP extends Connection {
      */
     public function only(Array $params): ?SimplePHP
     {
-        $this->params = $params;
+        $this->params = implode($params, ',');
         return $this;
     }
 
@@ -144,6 +144,18 @@ class SimplePHP extends Connection {
     }
 
     /**
+     * @return null
+     */
+    private function deny()
+    {
+        if(!empty($this->excepts)) {
+            foreach($this->excepts as $except) {
+                if(isset($this->data[$except])) unset($this->data[$except]);
+            }
+        }
+    }
+
+    /**
      * @param $prop
      * @param $value
      * @return null
@@ -176,35 +188,6 @@ class SimplePHP extends Connection {
     }
 
     /**
-     * Method to destroy @except method
-     */
-    private function deny()
-    {
-        if(!empty($this->excepts)) {
-            switch (!is_object($this->data) && $count = count($this->data)) {
-                case (!isset($this->data[0]) && !empty($this->data)):
-                    foreach($this->excepts as $except) {
-                        if(isset($this->data[$except])) {
-                            unset($this->data[$except]);
-                        }
-                    }
-                    break;
-                case ($count >= 2 && isset($this->data[0])):
-                    foreach($this->excepts as $except) {
-                        for($i = 0; $i < $count; $i++) {
-                            if(isset($this->data[$i][$except])) {
-                                unset($this->data[$i][$except]);
-                            }
-                        }
-                    }
-                    break;
-                default:
-                    return [];
-            }
-        }
-    }
-
-    /**
      * @return array|mixed
      */
     public function execute(bool $type = false)
@@ -214,15 +197,15 @@ class SimplePHP extends Connection {
             $execute = $this->conn->query("SELECT {$this->params} FROM {$this->table} {$this->where} {$this->order} {$this->limit} {$this->offset}");
             $execute->rowCount() > 1 ? 
                     $this->data = ($this->type ? $execute->fetchAll(PDO::FETCH_CLASS, static::class) : $execute->fetchAll(PDO::FETCH_ASSOC)) : $this->data = ($this->type ? $execute->fetchObject(static::class) : $execute->fetch(PDO::FETCH_ASSOC));
-            $this->deny();
-            return $this->data;
+        $this->deny();
+        return $this->data;
         } catch (PDOException $exc) {
             return $exc->getMessage();
         }
     }
 
     /**
-     * @return Exception|PDOException|bool(true)
+     * @return Exception|PDOException|bool
      */
     public function destroy()
     {
