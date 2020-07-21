@@ -101,6 +101,20 @@ use Models\User;
     $user = $userModel->find()->execute();
 ```
 
+------------
+
+#### Some mistakes and how to fix them
+
+> Fatal error: Uncaught Error: Class 'SimplePHP\Model\SimplePHP' not found
+
+To fix it, execute the following command in the project's root folder:
+
+```
+composer dump -o
+```
+
+------------
+
 ## Documentation
 
 ### Methods
