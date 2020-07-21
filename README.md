@@ -37,7 +37,7 @@ composer require nicollassilva/simplephp
 or **composer.json**:
 
 ```
-"nicollassilva/simplephp": "^1.2"
+"nicollassilva/simplephp": "^1.4"
 ```
 
 #### Connection
