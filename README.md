@@ -101,7 +101,7 @@ use Models\User;
     $user = $userModel->find()->execute();
 ```
 
-------------
+### Errors
 
 #### Some mistakes and how to fix them
 
@@ -112,8 +112,6 @@ To fix it, execute the following command in the project's root folder:
 ```
 composer dump -o
 ```
-
-------------
 
 ## Documentation
 
