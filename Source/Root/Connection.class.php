@@ -25,7 +25,7 @@ class Connection {
     /**
      * Connection construtor
      */
-    function __construct() { self::PDO(); }
+    function __construct() { $this->PDO(); }
 
     /**
      * Function connect PDO

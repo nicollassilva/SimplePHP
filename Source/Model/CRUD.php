@@ -2,6 +2,12 @@
 
 namespace SimplePHP\Model;
 
+use PDOException;
+
+/**
+ * Trait CRUD to SimplePHP
+ * @package NicollasSilva\SimplePHP
+ */
 trait CRUD {
 
     /**
@@ -23,15 +29,16 @@ trait CRUD {
      * @param string $params
      * @param array $values
      * @param int $primary
-     * @return bool
+     * @return PDOException|bool
      */
-    public function update(String $params, Array $values, Int $primary): bool
+    public function update(String $params, Array $values, Int $primary)
     {
+        try {
         $params = explode(',', $params);
         $data = [];
         $countParams = count($params);
         for ($i = 0; $i < $countParams; $i++) {
-            $data[$i] = ":" . $params[$i][0] . $params[$i][1] . $params[$i][2] . ", ";
+            $data[$i] = ":" . $params[$i] . $i . ", ";
         }
         $result = '';
         $final = array_map(null, $params, $data);
@@ -43,16 +50,40 @@ trait CRUD {
         $result = rtrim($result, ', ');
         $sql = $this->conn->prepare("UPDATE {$this->table} SET {$result} WHERE {$this->primary} = '{$primary}'");
         for ($i = 0; $i < $countParams; $i++) {
-            $data[$i] = ":" . $params[$i][0] . $params[$i][1] . $params[$i][2];
+            $data[$i] = ":" . $params[$i] . $i;
         }
         $countData = count($data);
         for ($i = 0; $i < $countData; $i++) {
             $sql->bindParam($data[$i], $values[$i]);
         }
-        if ($sql->execute()) {
-            return true;
-        } else {
-            return false;
+        return $sql->execute();
+        } catch(PDOException $exception) {
+            echo $exception->getMessage();
+        }
+    }
+
+    /**
+     * @param string $params
+     * @param array $values
+     * @return PDOException|bool
+     */
+    public function insert(String $params, Array $values)
+    {
+        try {
+            $parameters = "(".$params.")";
+            $params = explode(',', $params);
+            $data = [];
+                for($i = 0; $i < count($params); $i++) {
+                    $data[$i] = ":". $params[$i] . $i;
+                }
+            $valueBind = "(".implode(', ', $data).")";
+            $sql = $this->conn->prepare("INSERT INTO {$this->table} $parameters VALUES $valueBind");
+                for($i = 0; $i < count($params); $i++) {
+                    $sql->bindParam($data[$i], $values[$i]);
+                }
+            return $sql->execute();
+        } catch(PDOException $exception) {
+            echo $exception->getCode();
         }
     }
 }

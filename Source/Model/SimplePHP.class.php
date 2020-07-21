@@ -5,7 +5,7 @@ namespace SimplePHP\Model;
 use SimplePHP\Root\Connection;
 use PDO;
 use PDOException;
-use Exception;
+use Error;
 use stdClass;
 use SimplePHP\Model\CRUD as Actions;
 
@@ -49,6 +49,9 @@ class SimplePHP extends Connection {
     /** @var string */
     protected $primary;
 
+    /** @var array */
+    protected $request = [];
+
     /**
      * Get tablename of children model
      * @param string|null $tableName
@@ -60,9 +63,9 @@ class SimplePHP extends Connection {
 
     /**
      * @param int|null $id
-     * @return SimplePHP
+     * @return SimplePHP|null
      */
-    public function find(?int $id = null): SimplePHP
+    public function find(?int $id = null): ?SimplePHP
     {
         is_int($id) ? self::where('id', $id) : null;
         return $this;
@@ -73,7 +76,7 @@ class SimplePHP extends Connection {
      * @param string $value
      * @return SimplePHP|null
      */
-    public function where(string $condition, string $value): SimplePHP
+    public function where(string $condition, string $value): ?SimplePHP
     {
         $this->where = "WHERE " . (mb_strlen($this->where > 6) ? "&& {$condition} = '{$value}'" : "{$condition} = '{$value}'");
         return $this;
@@ -83,7 +86,7 @@ class SimplePHP extends Connection {
      * @param array $params
      * @return SimplePHP|null
      */
-    public function only(array $params): SimplePHP
+    public function only(array $params): ?SimplePHP
     {
         $params !== null ? $this->params = implode($params, ',') : $this->params = '*';
         return $this;
@@ -93,7 +96,7 @@ class SimplePHP extends Connection {
      * @param int $limit
      * @return SimplePHP|null
      */
-    public function limit(int $limit): SimplePHP
+    public function limit(int $limit): ?SimplePHP
     {
         $this->limit = "LIMIT $limit";
         return $this;
@@ -103,7 +106,7 @@ class SimplePHP extends Connection {
      * @param int $offset
      * @return SimplePHP|null
      */
-    public function offset(int $offset): SimplePHP
+    public function offset(int $offset): ?SimplePHP
     {
         $this->offset = "OFFSET $offset";
         return $this;
@@ -113,7 +116,7 @@ class SimplePHP extends Connection {
      * @param string $order
      * @return SimplePHP|null
      */
-    public function orderBy(string $order): SimplePHP
+    public function orderBy(string $order): ?SimplePHP
     {
         $this->order = "ORDER BY {$order}";
         return $this;
@@ -131,7 +134,7 @@ class SimplePHP extends Connection {
 
     /**
      * @param array $deniable
-     * @return SimplePHP
+     * @return SimplePHP|null
      */
     public function except(array $deniable)
     {
@@ -224,21 +227,23 @@ class SimplePHP extends Connection {
     {
         $primary = $this->primary;
         if (!isset($this->data->$primary)) {
-            throw new Exception("|| Índice primário não encontrado: {$primary} ||");
+            $this->error("Índice primário não encontrado: {$primary}.", __FUNCTION__);
         }
 
         return $this->delete($this->data->$primary);
     }
 
     /**
-     * @return Exception|bool
+     * @return Error|bool
      */
     public function save()
     {
         $primary = $this->primary;
         $data = json_decode(json_encode($this->data), true);
         if (empty($primary) || !isset($data[$primary])) {
-            throw new Exception("|| Índice primário não encontrado: {$primary} ||");
+            $this->error("Índice primário não encontrado: {$primary}.", __FUNCTION__);
+        } else if(!$this->find($data[$primary])->execute()) {
+            $this->error("Esse registro não consta no banco de dados: {$data[$primary]}.", __FUNCTION__);
         }
 
         $otherPrimary = $data[$primary];
@@ -247,5 +252,39 @@ class SimplePHP extends Connection {
         $values = array_values($data);
 
         return $this->update($parameters, $values, $otherPrimary);
+    }
+
+    /**
+     * @return SimplePHP|null
+     */
+    public function request(Array $request): ?SimplePHP
+    {
+        $this->request = $request;
+        return $this;
+    }
+
+    /**
+     * @return PDOException|Error|bool
+     */
+    public function create()
+    {
+        $request = $this->request;
+        if(empty($request)) {
+            $this->error("O array request está vazio!", __FUNCTION__);
+        }
+
+        $parameters = implode(',', array_keys($request));
+        $values = array_values($request);
+        
+        return $this->insert($parameters, $values);
+    }
+
+    /**
+     * @param string $message
+     * @param string $function
+     * @return Error|null
+     */
+    public function error(String $message, String $function): ?Error {
+        if($message) { throw new Error($message." Método: ".strtoupper($function)); } else { return null; };
     }
 }
