@@ -11,6 +11,8 @@
 
 A small CRUD project developed to assist daily routines and speed up the process of communicating with the database with security and transparency.
 
+![](SimplePHP.gif)
+
 ## Getting Started
 
 Some precautions and step-by-step instructions for you to download and install the package.
