@@ -5,6 +5,7 @@ namespace SimplePHP\Model;
 use SimplePHP\Root\Connection;
 use PDO;
 use PDOException;
+use Exception;
 use Error;
 use stdClass;
 use SimplePHP\Model\CRUD as Actions;
@@ -221,7 +222,7 @@ class SimplePHP extends Connection {
     }
 
     /**
-     * @return \Exception|bool(true)
+     * @return Exception|PDOException|bool(true)
      */
     public function destroy()
     {

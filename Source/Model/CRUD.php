@@ -73,12 +73,13 @@ trait CRUD {
             $parameters = "(".$params.")";
             $params = explode(',', $params);
             $data = [];
-                for($i = 0; $i < count($params); $i++) {
+            $countParams = count($params);
+                for($i = 0; $i < $countParams; $i++) {
                     $data[$i] = ":". $params[$i] . $i;
                 }
             $valueBind = "(".implode(', ', $data).")";
             $sql = $this->conn->prepare("INSERT INTO {$this->table} $parameters VALUES $valueBind");
-                for($i = 0; $i < count($params); $i++) {
+                for($i = 0; $i < $countParams; $i++) {
                     $sql->bindParam($data[$i], $values[$i]);
                 }
             return $sql->execute();
