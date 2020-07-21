@@ -148,9 +148,9 @@ class SimplePHP extends Connection {
      */
     private function deny()
     {
-        if(!empty($this->excepts)) {
-            foreach($this->excepts as $except) {
-                if(isset($this->data[$except])) unset($this->data[$except]);
+        if (!empty($this->excepts)) {
+            foreach ($this->excepts as $except) {
+                if (isset($this->data[$except])) unset($this->data[$except]);
             }
         }
     }
@@ -226,7 +226,7 @@ class SimplePHP extends Connection {
         $data = json_decode(json_encode($this->data), true);
         if (empty($primary) || !isset($data[$primary])) {
             $this->error("Índice primário não encontrado: {$primary}.", __FUNCTION__);
-        } else if(!$this->find($data[$primary])->execute()) {
+        } else if (!$this->find($data[$primary])->execute()) {
             $this->error("Esse registro não consta no banco de dados: {$data[$primary]}.", __FUNCTION__);
         }
 
@@ -253,7 +253,7 @@ class SimplePHP extends Connection {
     public function create()
     {
         $request = $this->request;
-        if(empty($request)) {
+        if (empty($request)) {
             $this->error("O array request está vazio!", __FUNCTION__);
         }
 
@@ -269,6 +269,6 @@ class SimplePHP extends Connection {
      * @return Error|null
      */
     public function error(String $message, String $function): ?Error {
-        if($message) { throw new Error($message." Método: ".strtoupper($function)); } else { return null; };
+        if ($message) { throw new Error($message . " Método: " . strtoupper($function)); } else { return null; };
     }
 }
