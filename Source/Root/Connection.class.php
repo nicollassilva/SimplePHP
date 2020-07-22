@@ -32,6 +32,8 @@ class Connection {
      */
     public function PDO()
     {
+        date_default_timezone_set($this->config['timezone']);
+        
         if(empty($this->conn)) {
             try {
                 $this->conn = new PDO(

@@ -12,7 +12,7 @@ trait CRUD {
 
     /**
      * @param int $primary
-     * @return bool
+     * @return bool|null
      */
     public function delete(int $primary): ?bool
     {
@@ -21,7 +21,7 @@ trait CRUD {
             $sql->bindParam(':primary', $primary);
             return $sql->execute();
         } catch (PDOException $exception) {
-            return null;
+            return $this->writeLog($exception->getCode(), true);
         }
     }
 
@@ -29,7 +29,7 @@ trait CRUD {
      * @param string $params
      * @param array $values
      * @param int $primary
-     * @return PDOException|bool
+     * @return bool|null
      */
     public function update(String $params, Array $values, Int $primary)
     {
@@ -58,14 +58,14 @@ trait CRUD {
         }
         return $sql->execute();
         } catch(PDOException $exception) {
-            echo $exception->getMessage();
+            return $this->writeLog($exception->getCode(), true);
         }
     }
 
     /**
      * @param string $params
      * @param array $values
-     * @return PDOException|bool
+     * @return bool|null
      */
     public function insert(String $params, Array $values)
     {
@@ -84,7 +84,7 @@ trait CRUD {
                 }
             return $sql->execute();
         } catch(PDOException $exception) {
-            echo $exception->getCode();
+            return $this->writeLog($exception->getCode(), true);
         }
     }
 }

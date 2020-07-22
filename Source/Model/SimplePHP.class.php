@@ -51,7 +51,7 @@ class SimplePHP extends Connection {
     protected $request = [];
 
     /** @var array */
-    public $excepts = [];
+    protected $excepts = [];
 
     /**
      * Get tablename of children model
@@ -126,11 +126,11 @@ class SimplePHP extends Connection {
     /**
      * @param string $name
      * @param mixed $arguments
-     * @return string error
+     * @return null
      */
     public function __call(String $name, $arguments)
     {
-        return "This method does not exist at the SimplePHP: \"<b>{$name}</b>\".";
+        return writeLog("This method does not exist at the SimplePHP: \"<b>{$name}</b>\".");
     }
 
     /**
@@ -200,34 +200,34 @@ class SimplePHP extends Connection {
         $this->deny();
         return $this->data;
         } catch (PDOException $exc) {
-            return $exc->getMessage();
+            return writeLog($exc->getCode(), true);
         }
     }
 
     /**
-     * @return Exception|PDOException|bool
+     * @return null|bool
      */
     public function destroy()
     {
         $primary = $this->primary;
         if (!isset($this->data->$primary)) {
-            $this->error("Índice primário não encontrado: {$primary}.", __FUNCTION__);
+            return $this->writeLog("The primary index was not found.");
         }
 
         return $this->delete($this->data->$primary);
     }
 
     /**
-     * @return Error|PDOException|bool
+     * @return null|bool
      */
     public function save()
     {
         $primary = $this->primary;
         $data = json_decode(json_encode($this->data), true);
         if (empty($primary) || !isset($data[$primary])) {
-            $this->error("Índice primário não encontrado: {$primary}.", __FUNCTION__);
+            return $this->writeLog("The primary index was not found.");
         } else if (!$this->find($data[$primary])->execute()) {
-            $this->error("Esse registro não consta no banco de dados: {$data[$primary]}.", __FUNCTION__);
+            return $this->writeLog("The primary index was not found in the database.");
         }
 
         $otherPrimary = $data[$primary];
@@ -248,13 +248,13 @@ class SimplePHP extends Connection {
     }
 
     /**
-     * @return PDOException|Error|bool
+     * @return null|bool
      */
     public function create()
     {
         $request = $this->request;
         if (empty($request)) {
-            $this->error("O array request está vazio!", __FUNCTION__);
+            return writeLog("No information was passed to record.");
         }
 
         $parameters = implode(',', array_keys($request));
@@ -265,10 +265,14 @@ class SimplePHP extends Connection {
 
     /**
      * @param string $message
-     * @param string $function
-     * @return Error|null
+     * @return null
      */
-    public function error(String $message, String $function): ?Error {
-        if ($message) { throw new Error($message . " Método: " . strtoupper($function)); } else { return null; };
+    protected function writeLog($message, $pdo = false)
+    {
+        $message = $pdo ? "Error: PDOCode " . $message : $message;
+        $archive = fopen(dirname(__DIR__) . DIRECTORY_SEPARATOR . "Logs" . DIRECTORY_SEPARATOR . "Logs.txt", 'a+');
+        fwrite($archive, "-----SimplePHPLog-----\n" . date("d/m/Y H:i:s", time()) . " -> ". $message ."\n-------\n");
+        fclose($archive);
+        return null;
     }
 }
