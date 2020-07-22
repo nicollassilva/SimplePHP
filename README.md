@@ -9,6 +9,7 @@
 [![Code Intelligence Status](https://scrutinizer-ci.com/g/nicollassilva/SimplePHP/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
 [![Total Downloads](https://img.shields.io/packagist/dt/nicollassilva/simplephp.svg?style=flat-square)](https://packagist.org/packages/nicollassilva/simplephp)
 
+###### Um pequeno projeto CRUD desenvolvido para auxiliar as rotinas diárias e acelerar o processo de comunicação com o banco de dados com segurança e transparência.
 A small CRUD project developed to assist daily routines and speed up the process of communicating with the database with security and transparency.
 
 ![](SimplePHP.gif)
