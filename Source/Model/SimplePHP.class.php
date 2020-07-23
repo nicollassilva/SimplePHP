@@ -72,7 +72,7 @@ class SimplePHP extends Connection {
      */
     public function find(int $id = null): ?SimplePHP
     {
-        is_int($id) ? $this->where('id', '=', $id) : null;
+        is_int($id) ? $this->where([['id', '=', $id]]) : null;
         return $this;
     }
 
@@ -83,12 +83,11 @@ class SimplePHP extends Connection {
      */
     public function where(Array $where, String $condition = 'AND'): ?SimplePHP
     {
-        if(is_array($where)) {
-            foreach($where as $enclosures) {
-                $this->where .= $enclosures[0]." ".$enclosures[1]." '".$enclosures[2]."' {$condition} ";
-            }
-            $this->where = "WHERE " . rtrim($this->where, " {$condition} ");
+        foreach($where as $enclosures) {
+            $this->where .= $enclosures[0]." ".$enclosures[1]." '".$enclosures[2]."' {$condition} ";
         }
+        $this->where = "WHERE " . rtrim($this->where, " {$condition} ");
+
         return $this;
     }
 
