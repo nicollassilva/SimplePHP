@@ -133,11 +133,17 @@ $user = $userModel->find()->execute();
 /** find user by id */
 $user = $userModel->find(5)->execute();
 
+/** find users and return the total result count */
+$count = $userModel->find()->count()->execute();
+
 /** find user with one condition */
-$user = $userModel->find()->where('email', 'example@gmail.com')->execute();
+$user = $userModel->find()->where('email', '=', 'example@gmail.com')->execute();
 
 /** find user with + conditions */
-$user = $userModel->find()->where('name', 'Nícollas Silva')->where('email', 'nicollas@gmail.com')->execute();
+$user = $userModel->find()->where('name', '=', 'Nícollas Silva')->where('email', '=', 'nicollas@gmail.com')->execute();
+
+/** find user with LIKE */
+$user = $userModel->find()->where('name', 'LIKE', 'Nicollas')->execute();
 
 /** find users with limit */
 $user = $userModel->find()->limit(5)->execute();
@@ -148,7 +154,7 @@ $user = $userModel->find()->limit(5)->offset(5)->execute();
 /** find users with orderBy */
 $user = $userModel->find()->orderBy('id ASC')->execute();
 
-/** find users and return results as attributes. [| Example: $user->name instead of $user['name'] |] */
+/** find users and return results as attributes. EXAMPLE: $user->name instead of $user['name'] */
 $user = $userModel->find()->execute(true); 
 
 /** find users with specific columns. */
