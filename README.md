@@ -12,8 +12,6 @@
 ###### Um pequeno projeto CRUD desenvolvido para auxiliar as rotinas diárias e acelerar o processo de comunicação com o banco de dados com segurança e transparência.
 A small CRUD project developed to assist daily routines and speed up the process of communicating with the database with security and transparency.
 
-![](SimplePHP.gif)
-
 ## Getting Started
 
 Some precautions and step-by-step instructions for you to download and install the package.
@@ -125,7 +123,7 @@ composer dump -o
 
 use Models\User;
 
-$userModel= new User();
+$userModel = new User();
 
 /** find all users */
 $user = $userModel->find()->execute();
@@ -138,25 +136,25 @@ $count = $userModel->find()->count()->execute();
 
 /** find user with one where */
 $user = $userModel->find()->where([
-                                ['name', '=', 'Nicollas']
+                                     ['name', '=', 'Nicollas']
                                 ])->execute();
 
 /** find user with several where. Conditional AND */
 $user = $userModel->find()->where([
-                                ['name', '=', 'John'],
-                                ['email', '=', 'johnmoppans@gmail.com']
+                                     ['name', '=', 'John'],
+                                     ['email', '=', 'johnmoppans@gmail.com']
                                 ])->execute();
 
 /** find user with LIKE. Conditional AND */
 $user = $userModel->find()->where([
-                                ['name', 'LIKE', '%Guilherme%'],
-                                ['email', '=', 'guilherme@gmail.com']
+                                     ['name', 'LIKE', '%Guilherme%'],
+                                     ['email', '=', 'guilherme@gmail.com']
                                 ])->execute();
 
 /** find user with conditional where. Condicional OR */
 $user = $userModel->find()->where([
-                                ['name', 'LIKE', '%Nicollas%'],
-                                ['name', 'LIKE', '%Nicolas%']
+                                     ['name', 'LIKE', '%Nicollas%'],
+                                     ['name', 'LIKE', '%Nicolas%']
                                 ], 'OR')->execute();
 
 /** find users with limit */
