@@ -54,6 +54,9 @@ class SimplePHP extends Connection {
     /** @var array */
     protected $excepts = [];
 
+    /** @var bool */
+    protected $count = false;
+
     /**
      * Get tablename of children model
      * @param string|null $tableName
@@ -131,7 +134,7 @@ class SimplePHP extends Connection {
      */
     public function __call(String $name, $arguments)
     {
-        return writeLog("This method does not exist at the SimplePHP: \"<b>{$name}</b>\".");
+        return $this->writeLog("This method does not exist at the SimplePHP: \"<b>{$name}</b>\".");
     }
 
     /**
@@ -189,6 +192,15 @@ class SimplePHP extends Connection {
     }
 
     /**
+     * @return SimplePHP|null
+     */
+    public function count(): ?SimplePHP
+    {
+        $this->count = true;
+        return $this;
+    }
+
+    /**
      * @return array|mixed
      */
     public function execute(bool $type = false)
@@ -199,9 +211,9 @@ class SimplePHP extends Connection {
             $execute->rowCount() > 1 ? 
                     $this->data = ($this->type ? $execute->fetchAll(PDO::FETCH_CLASS, static::class) : $execute->fetchAll(PDO::FETCH_ASSOC)) : $this->data = ($this->type ? $execute->fetchObject(static::class) : $execute->fetch(PDO::FETCH_ASSOC));
         $this->deny();
-        return $this->data;
+        return !$this->count ? $this->data : $execute->rowCount();
         } catch (PDOException $exc) {
-            return writeLog($exc->getCode(), true);
+            return $this->writeLog($exc->getCode(), true);
         }
     }
 
@@ -255,7 +267,7 @@ class SimplePHP extends Connection {
     {
         $request = $this->request;
         if (empty($request)) {
-            return writeLog("No information was passed to record.");
+            return $this->writeLog("No information was passed to record.");
         }
 
         $parameters = implode(',', array_keys($request));
