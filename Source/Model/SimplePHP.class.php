@@ -3,6 +3,7 @@
 namespace SimplePHP\Model;
 
 use SimplePHP\Root\Connection;
+use SimplePHP\Root\Functions;
 use PDO;
 use PDOException;
 use Exception;
@@ -15,7 +16,7 @@ use SimplePHP\Model\CRUD as Actions;
  * @package NicollasSilva\SimplePHP
  */
 class SimplePHP extends Connection {
-    use Actions;
+    use Actions, Functions;
 
     /** @var string */
     protected $sentence = '';
