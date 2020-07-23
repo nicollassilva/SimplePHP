@@ -72,18 +72,23 @@ class SimplePHP extends Connection {
      */
     public function find(int $id = null): ?SimplePHP
     {
-        is_int($id) ? $this->where('id', $id) : null;
+        is_int($id) ? $this->where('id', '=', $id) : null;
         return $this;
     }
 
     /**
-     * @param string $condition
-     * @param string $value
+     * @param array $where
+     * @param string $condition = 'AND'
      * @return SimplePHP|null
      */
-    public function where(String $condition, String $value): ?SimplePHP
+    public function where(Array $where, String $condition = 'AND'): ?SimplePHP
     {
-        $this->where = "WHERE " . (mb_strlen($this->where > 6) ? "&& {$condition} = '{$value}'" : "{$condition} = '{$value}'");
+        if(is_array($where)) {
+            foreach($where as $enclosures) {
+                $this->where .= $enclosures[0]." ".$enclosures[1]." '".$enclosures[2]."' {$condition} ";
+            }
+            $this->where = "WHERE " . rtrim($this->where, " {$condition} ");
+        }
         return $this;
     }
 
@@ -119,11 +124,12 @@ class SimplePHP extends Connection {
 
     /**
      * @param string $order
+     * @param string $ordenation = 'ASC'
      * @return SimplePHP|null
      */
-    public function orderBy(String $order): ?SimplePHP
+    public function orderBy(String $prop, String $ordenation = 'ASC'): ?SimplePHP
     {
-        $this->order = "ORDER BY {$order}";
+        $this->order = "ORDER BY " . (mb_strlen($this->order > 9) ? ", {$prop} {$ordenation}" : "{$prop} {$ordenation}");
         return $this;
     }
 
@@ -191,17 +197,14 @@ class SimplePHP extends Connection {
         return $this->data->$prop ?? null;
     }
 
-    /**
-     * @return SimplePHP|null
-     */
-    public function count(): ?SimplePHP
+    public function count(): SimplePHP
     {
         $this->count = true;
         return $this;
     }
 
     /**
-     * @return array|mixed
+     * @return array|object|int|null
      */
     public function execute(bool $type = false)
     {
