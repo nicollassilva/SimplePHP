@@ -1,4 +1,4 @@
-﻿# Simple PHP - Simple and easy CRUD for PHP projects
+﻿# Simple PHP - Simple and easy QueryBuilder for PHP projects
 
 [![Maintainer](http://img.shields.io/badge/maintainer-@nicollassilva-blue.svg?style=flat-square)](https://github.com/nicollassilva)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nicollassilva/SimplePHP/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/nicollassilva/SimplePHP/?branch=master)
@@ -9,8 +9,10 @@
 [![Code Intelligence Status](https://scrutinizer-ci.com/g/nicollassilva/SimplePHP/badges/code-intelligence.svg?b=master)](https://scrutinizer-ci.com/code-intelligence)
 [![Total Downloads](https://img.shields.io/packagist/dt/nicollassilva/simplephp.svg?style=flat-square)](https://packagist.org/packages/nicollassilva/simplephp)
 
-###### Um pequeno projeto CRUD desenvolvido para auxiliar as rotinas diárias e acelerar o processo de comunicação com o banco de dados com segurança e transparência.
-A small CRUD project developed to assist daily routines and speed up the process of communicating with the database with security and transparency.
+###### Um pequeno projeto construtor de query desenvolvido para auxiliar as rotinas diárias e acelerar o processo de comunicação com o banco de dados com segurança e transparência.
+A small query builder project developed to assist daily routines and speed up the process of communicating with the database with security and transparency.
+
+![Logomarca](logo.png)
 
 ## Getting Started
 
