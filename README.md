@@ -136,14 +136,28 @@ $user = $userModel->find(5)->execute();
 /** find users and return the total result count */
 $count = $userModel->find()->count()->execute();
 
-/** find user with one condition */
-$user = $userModel->find()->where('email', '=', 'example@gmail.com')->execute();
+/** find user with one where */
+$user = $userModel->find()->where([
+                                ['name', '=', 'Nicollas']
+                                ])->execute();
 
-/** find user with + conditions */
-$user = $userModel->find()->where('name', '=', 'Nícollas Silva')->where('email', '=', 'nicollas@gmail.com')->execute();
+/** find user with several where. Conditional AND */
+$user = $userModel->find()->where([
+                                ['name', '=', 'John'],
+                                ['email', '=', 'johnmoppans@gmail.com']
+                                ])->execute();
 
-/** find user with LIKE */
-$user = $userModel->find()->where('name', 'LIKE', 'Nicollas')->execute();
+/** find user with LIKE. Conditional AND */
+$user = $userModel->find()->where([
+                                ['name', 'LIKE', '%Guilherme%'],
+                                ['email', '=', 'guilherme@gmail.com']
+                                ])->execute();
+
+/** find user with conditional where. Condicional OR */
+$user = $userModel->find()->where([
+                                ['name', 'LIKE', '%Nicollas%'],
+                                ['name', 'LIKE', '%Nicolas%']
+                                ], 'OR')->execute();
 
 /** find users with limit */
 $user = $userModel->find()->limit(5)->execute();
