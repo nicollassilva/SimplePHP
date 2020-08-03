@@ -165,8 +165,8 @@ $user = $userModel->find()->limit(5)->execute();
 /** find users with limit & offset */
 $user = $userModel->find()->limit(5)->offset(5)->execute();
 
-/** find users with orderBy */
-$user = $userModel->find()->orderBy('id ASC')->execute();
+/** find users with orderBy. second parameter optional, default ASC */
+$user = $userModel->find()->orderBy('id', 'DESC')->orderBy('name')->execute();
 
 /** find users and return results as attributes. EXAMPLE: $user->name instead of $user['name'] */
 $user = $userModel->find()->execute(true); 
