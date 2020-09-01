@@ -175,6 +175,9 @@ $user = $userModel->find()->only(['name', 'id', 'email'])->execute();
 /** find users creating exceptions in columns. */
 $user = $userModel->find(5)->except(['password'])->execute();
 
+/** search in other database table */
+$user = $userModel->useTable('posts')->find()->where([['owner_id', '=', $user->id]])->execute();
+
 ```
 
 * **Note:** _except()_ method does not work chained with the _execute(true)_ method, only _execute()_ without parameter true.
