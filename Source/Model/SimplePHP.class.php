@@ -128,7 +128,11 @@ class SimplePHP extends Connection {
      */
     public function orderBy(String $prop, String $ordenation = 'ASC'): ?SimplePHP
     {
-        $this->order = "ORDER BY " . (mb_strlen($this->order > 9) ? ", {$prop} {$ordenation}" : "{$prop} {$ordenation}");
+        if(mb_strlen($this->order) < 9) {
+            $this->order = "ORDER BY {$prop} {$ordenation}";
+        } else {
+            $this->order .= ", {$prop} {$ordenation}";
+        }
         return $this;
     }
 
@@ -289,5 +293,15 @@ class SimplePHP extends Connection {
         fwrite($archive, "-----SimplePHPLog-----\n" . date("d/m/Y H:i:s", time()) . " -> ". $message ."\n-------\n");
         fclose($archive);
         return null;
+    }
+
+    /**
+     * @param string $table
+     * @return SimplePHP|null
+     */
+    public function useTable(String $table): ?SimplePHP
+    {
+        $this->table = $table;
+        return $this;
     }
 }
