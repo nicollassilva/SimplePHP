@@ -176,7 +176,7 @@ $user = $userModel->find()->only(['name', 'id', 'email'])->execute();
 $user = $userModel->find(5)->except(['password'])->execute();
 
 /** search in other database table */
-$user = $userModel->useTable('posts')->find()->where([['owner_id', '=', $user->id]])->execute();
+$user = (new User())->useTable('posts')->find()->where([['owner_id', '=', $user->id]])->execute();
 
 ```
 
