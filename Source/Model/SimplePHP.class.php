@@ -2,14 +2,18 @@
 
 namespace SimplePHP\Model;
 
-use SimplePHP\Root\Connection;
-use SimplePHP\Root\Functions;
-use PDO;
-use PDOException;
-use Exception;
-use Error;
-use stdClass;
+use SimplePHP\Root\{
+    Connection,
+    Functions
+};
+use PDO,
+    PDOException,
+    Exception,
+    Error,
+    stdClass;
 use SimplePHP\Model\CRUD as Actions;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 /**
  * Class SimplePHP
@@ -57,6 +61,9 @@ class SimplePHP extends Connection {
     /** @var bool */
     protected $count = false;
 
+    /** @var string */
+    protected $group;
+
     /**
      * Get tablename of children model
      * @param string|null $tableName
@@ -72,7 +79,7 @@ class SimplePHP extends Connection {
      */
     public function find(int $id = null): ?SimplePHP
     {
-        is_int($id) ? $this->where([['id', '=', $id]]) : null;
+        is_int($id) ? $this->whereRaw("id = {$id}") : null;
         return $this;
     }
 
@@ -84,9 +91,37 @@ class SimplePHP extends Connection {
     public function where(Array $where, String $condition = 'AND'): ?SimplePHP
     {
         foreach($where as $enclosures) {
-            $this->where .= $enclosures[0]." ".$enclosures[1]." '".$enclosures[2]."' {$condition} ";
+            $split = isset($enclosures[3]) && !$enclosures[3] ? $enclosures[2] : "'".$enclosures[2]."'";
+            $this->where .= $enclosures[0]." ".$enclosures[1]." ".$split." {$condition} ";
         }
         $this->where = "WHERE " . rtrim($this->where, " {$condition} ");
+
+        return $this;
+    }
+
+    /**
+     * @param array $where
+     * @return SimplePHP|null
+     */
+    public function whereRaw(String $where): ?SimplePHP
+    {
+        $this->where = "WHERE " . $where;
+        return $this;
+    }
+
+    /**
+     * @param array $orWhere
+     * @param string $condition = 'AND'
+     * @return SimplePHP|null
+     */
+    public function orWhere(Array $orWhere, String $condition = 'AND'): ?SimplePHP
+    {
+        $moreWhere = '';
+        foreach($orWhere as $enclosures) {
+            $split = isset($enclosures[3]) && !$enclosures[3] ? $enclosures[2] : "'".$enclosures[2]."'";
+            $moreWhere .= $enclosures[0]." ".$enclosures[1]." ".$split." {$condition} ";
+        }
+        $this->where .= " OR " . rtrim($moreWhere, " {$condition} ");
 
         return $this;
     }
@@ -137,12 +172,32 @@ class SimplePHP extends Connection {
     }
 
     /**
+     * @param string $prop
+     * @return SimplePHP|null
+     */
+    public function groupBy(String $prop): ?SimplePHP
+    {
+        if(mb_strlen($this->group) < 9) {
+            $this->group = "GROUP BY {$prop}";
+        } else {
+            $this->group .= ", {$prop}";
+        }
+        return $this;
+    }
+
+    /**
      * @param string $name
      * @param mixed $arguments
      * @return null
      */
     public function __call(String $name, $arguments)
     {
+        if($name === 'skip')
+            return $this->offset($arguments[0]);
+
+        if($name === 'take')
+            return $this->limit($arguments[0]);
+
         return $this->writeLog("This method does not exist at the SimplePHP: \"<b>{$name}</b>\".");
     }
 
@@ -284,14 +339,13 @@ class SimplePHP extends Connection {
 
     /**
      * @param string $message
-     * @return null
+     * @return null|Logger
      */
-    protected function writeLog($message, $pdo = false)
+    protected function writeLog($message, $pdo = false): ?Logger
     {
-        $message = $pdo ? "Error: PDOCode " . $message : $message;
-        $archive = fopen(dirname(__DIR__) . DIRECTORY_SEPARATOR . "Logs" . DIRECTORY_SEPARATOR . "Logs.txt", 'a+');
-        fwrite($archive, "-----SimplePHPLog-----\n" . date("d/m/Y H:i:s", time()) . " -> ". $message ."\n-------\n");
-        fclose($archive);
+        $log = new Logger('SimplePHP');
+        $log->pushHandler(new StreamHandler($this->config["pathLog"], Logger::WARNING));
+        $pdo ? $log->error($message) : $log->warning($message);
         return null;
     }
 
@@ -303,5 +357,13 @@ class SimplePHP extends Connection {
     {
         $this->table = $table;
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function debugQuery()
+    {
+        return "SELECT {$this->params} FROM {$this->table} {$this->where} {$this->group} {$this->order} {$this->limit} {$this->offset}";
     }
 }

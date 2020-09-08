@@ -25,7 +25,8 @@
     "minimum-stability": "dev",
     "require": {
         "php": "^7.2.5",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "monolog/monolog": "^2.1"
     },
     "autoload": {
     	"psr-4": {
