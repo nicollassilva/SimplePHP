@@ -205,7 +205,7 @@ class SimplePHP extends Connection {
      * @param array $deniable
      * @return SimplePHP|null
      */
-    public function except(Array $deniable)
+    public function except(Array $deniable): ?SimplePHP
     {
         $this->excepts = $deniable;
         return $this;
@@ -250,7 +250,7 @@ class SimplePHP extends Connection {
      * @param $prop
      * @return string|null
      */
-    public function __get($prop)
+    public function __get($prop): ?String
     {
         return $this->data->$prop ?? null;
     }
@@ -281,7 +281,7 @@ class SimplePHP extends Connection {
     /**
      * @return null|bool
      */
-    public function destroy()
+    public function destroy(): ?Boolean
     {
         $primary = $this->primary;
         if (!isset($this->data->$primary)) {
@@ -294,7 +294,7 @@ class SimplePHP extends Connection {
     /**
      * @return null|bool
      */
-    public function save()
+    public function save(): ?Boolean
     {
         $primary = $this->primary;
         $data = json_decode(json_encode($this->data), true);
@@ -324,7 +324,7 @@ class SimplePHP extends Connection {
     /**
      * @return null|bool
      */
-    public function create()
+    public function create(): ?Boolean
     {
         $request = $this->request;
         if (empty($request)) {
@@ -345,8 +345,7 @@ class SimplePHP extends Connection {
     {
         $log = new Logger('SimplePHP');
         $log->pushHandler(new StreamHandler($this->config["pathLog"], Logger::WARNING));
-        $pdo ? $log->error($message) : $log->warning($message);
-        return null;
+        return !!$pdo ? $log->error($message) : $log->warning($message);
     }
 
     /**
@@ -362,7 +361,7 @@ class SimplePHP extends Connection {
     /**
      * @return string
      */
-    public function debugQuery()
+    public function debugQuery(): String
     {
         return "SELECT {$this->params} FROM {$this->table} {$this->where} {$this->group} {$this->order} {$this->limit} {$this->offset}";
     }
