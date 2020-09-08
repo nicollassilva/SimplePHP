@@ -188,9 +188,9 @@ class SimplePHP extends Connection {
     /**
      * @param string $name
      * @param mixed $arguments
-     * @return null
+     * @return null|SimplePHP
      */
-    public function __call(String $name, $arguments)
+    public function __call(String $name, $arguments) : ?SimplePHP
     {
         if($name === 'skip')
             return $this->offset($arguments[0]);
