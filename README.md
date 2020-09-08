@@ -36,7 +36,11 @@ composer require nicollassilva/simplephp
 or **composer.json**:
 
 ```
+<<<<<<< Updated upstream
 "nicollassilva/simplephp": "^1.8"
+=======
+"nicollassilva/simplephp": "^1.9"
+>>>>>>> Stashed changes
 ```
 
 #### Connection
@@ -48,12 +52,13 @@ Example of the file to be found:
 protected $config = [
         "driver" => "mysql",
         "hostname" => "localhost",
-        "charset" => "utf8",
+        "charset" => "utf8mb4",
         "port" => 3306,
         "username" => "root",
         "password" => "",
         "database" => "",
         "timezone" => "America/Sao_Paulo",
+        "pathLog" => __DIR__ . "/../../../../../your-log.log",
         "options" => [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_CASE => PDO::CASE_NATURAL,
@@ -132,39 +137,53 @@ $user = $userModel->find()->execute();
 $user = $userModel->find(5)->execute();
 
 /** find users and return the total result count */
-$count = $userModel->find()->count()->execute();
+$count = $userModel->count()->execute();
 
 /** find user with one where */
-$user = $userModel->find()->where([
+$user = $userModel->where([
                                      ['name', '=', 'Nicollas']
                                 ])->execute();
 
-/** find user with several where. Conditional AND */
-$user = $userModel->find()->where([
+/** find user with several where. Conditional AND default */
+$user = $userModel->where([
                                      ['name', '=', 'John'],
                                      ['email', '=', 'johnmoppans@gmail.com']
                                 ])->execute();
 
-/** find user with LIKE. Conditional AND */
-$user = $userModel->find()->where([
+/** find user with LIKE. Conditional AND default */
+$user = $userModel->where([
                                      ['name', 'LIKE', '%Guilherme%'],
                                      ['email', '=', 'guilherme@gmail.com']
                                 ])->execute();
 
 /** find user with conditional where. Condicional OR */
-$user = $userModel->find()->where([
+$user = $userModel->where([
                                      ['name', 'LIKE', '%Nicollas%'],
                                      ['name', 'LIKE', '%Nicolas%']
                                 ], 'OR')->execute();
 
+/** find users by name = Nicollas OR name = Nicolas */
+$user = $userModel->where([
+				     ['name', '=', 'Nicollas']
+			])
+			->orWhere([
+				     ['name', '=', 'Nicolas']
+			])->execute();
+
+/** find user using the basic structure query */
+$user = $userModel->whereRaw("name = 'Nicollas'")->execute();
+
 /** find users with limit */
-$user = $userModel->find()->limit(5)->execute();
+$user = $userModel->limit(5)->execute();
 
 /** find users with limit & offset */
-$user = $userModel->find()->limit(5)->offset(5)->execute();
+$user = $userModel->limit(5)->offset(5)->execute();
+
+/** find users with skip & take | the same as limit & offset */
+$user = $userModel->take(5)->skip(5)->execute();
 
 /** find users with orderBy. second parameter optional, default ASC */
-$user = $userModel->find()->orderBy('id', 'DESC')->orderBy('name')->execute();
+$user = $userModel->orderBy('id', 'DESC')->orderBy('name')->execute();
 
 /** find users and return results as attributes. EXAMPLE: $user->name instead of $user['name'] */
 $user = $userModel->find()->execute(true); 
@@ -177,11 +196,39 @@ $user = $userModel->find(5)->except(['password'])->execute();
 
 /** search in other database table */
 $user = (new User())->useTable('posts')->find()->where([['owner_id', '=', $user->id]])->execute();
+<<<<<<< Updated upstream
+=======
+
+/** debug query for possible errors | return string */
+$user = $userModel->whereRaw("uuid = 'f031b537-672f-4fba-b8a6-af45e778ad93'")->debugQuery();
+
+/** group by method */
+$user = $userModel->groupBy('id');
+>>>>>>> Stashed changes
 
 ```
 
 * **Note:** _except()_ method does not work chained with the _execute(true)_ method, only _execute()_ without parameter true.
 * **Note:** _except()_ method only works when looking for specific information, in multidimensional arrays it does not work. This will be fixed soon.
+
+
+* All methods are friendly to each other, that means you can make complex queries. Real example:
+
+```php
+
+/** Search for a user's posts varying between the privacy in which it was saved */
+/** You can pass false as a fourth argument, the class will understand that you are trying to relate tables and will not put single quotes */
+
+$posts = (new User())->useTable('posts p, users u')
+                             ->where([['u.id', '=', $user['id'] ?? $visit['id']],
+                                      ['u.id', '=', 'p.user_id', false], /** example of the fourth argument for relating tables */
+                                      ['p.privacity', '<=', isset($privacity) && is_array($privacity) ? 3 : ($visit['url'] != $flag ? 1 : 4)]])
+                             ->only(['p.*', 'u.name', 'u.url', 'u.i_profile'])
+                             ->limit(10)
+                             ->orderBy('p.id')
+                             ->execute();
+
+```
 
 #### destroy
 
