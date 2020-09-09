@@ -12,8 +12,10 @@ use PDO,
     Error,
     stdClass;
 use SimplePHP\Model\CRUD as Actions;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
+use Monolog\{
+    Logger,
+    Handler\StreamHandler
+};
 
 /**
  * Class SimplePHP
@@ -198,7 +200,8 @@ class SimplePHP extends Connection {
         if($name === 'take')
             return $this->limit($arguments[0]);
 
-        return $this->writeLog("This method does not exist at the SimplePHP: \"<b>{$name}</b>\".");
+        $this->writeLog("This method does not exist at the SimplePHP: \"<b>{$name}</b>\".");
+        return null;
     }
 
     /**
@@ -268,13 +271,14 @@ class SimplePHP extends Connection {
     {
         $this->type = $type;
         try {
-            $execute = $this->conn->query("SELECT {$this->params} FROM {$this->table} {$this->where} {$this->order} {$this->limit} {$this->offset}");
+            $execute = $this->conn->query("SELECT {$this->params} FROM {$this->table} {$this->where} {$this->group} {$this->order} {$this->limit} {$this->offset}");
             $execute->rowCount() > 1 ? 
                     $this->data = ($this->type ? $execute->fetchAll(PDO::FETCH_CLASS, static::class) : $execute->fetchAll(PDO::FETCH_ASSOC)) : $this->data = ($this->type ? $execute->fetchObject(static::class) : $execute->fetch(PDO::FETCH_ASSOC));
         $this->deny();
         return !$this->count ? $this->data : $execute->rowCount();
         } catch (PDOException $exc) {
-            return $this->writeLog($exc->getMessage(), true);
+            $this->writeLog($exc->getMessage(), true);
+            return null;
         }
     }
 
@@ -285,7 +289,8 @@ class SimplePHP extends Connection {
     {
         $primary = $this->primary;
         if (!isset($this->data->$primary)) {
-            return $this->writeLog("The primary index was not found.");
+            $this->writeLog("The primary index was not found.");
+            return null;
         }
 
         return $this->delete($this->data->$primary);
@@ -299,9 +304,11 @@ class SimplePHP extends Connection {
         $primary = $this->primary;
         $data = json_decode(json_encode($this->data), true);
         if (empty($primary) || !isset($data[$primary])) {
-            return $this->writeLog("The primary index was not found.");
+            $this->writeLog("The primary index was not found.");
+            return null;
         } else if (!$this->find($data[$primary])->execute()) {
-            return $this->writeLog("The primary index was not found in the database.");
+            $this->writeLog("The primary index was not found in the database.");
+            return null;
         }
 
         $otherPrimary = $data[$primary];
@@ -328,7 +335,8 @@ class SimplePHP extends Connection {
     {
         $request = $this->request;
         if (empty($request)) {
-            return $this->writeLog("No information was passed to record.");
+            $this->writeLog("No information was passed to record.");
+            return null;
         }
 
         $parameters = implode(',', array_keys($request));
