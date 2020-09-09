@@ -92,9 +92,9 @@ class SimplePHP extends Connection {
      */
     public function where(Array $where, String $condition = 'AND'): ?SimplePHP
     {
-        foreach($where as $enclosures) {
-            $split = isset($enclosures[3]) && !$enclosures[3] ? $enclosures[2] : "'".$enclosures[2]."'";
-            $this->where .= $enclosures[0]." ".$enclosures[1]." ".$split." {$condition} ";
+        foreach ($where as $enclosures) {
+            $split = isset($enclosures[3]) && !$enclosures[3] ? $enclosures[2] : "'" . $enclosures[2] . "'";
+            $this->where .= $enclosures[0] . " " . $enclosures[1] . " " . $split . " {$condition} ";
         }
         $this->where = "WHERE " . rtrim($this->where, " {$condition} ");
 
@@ -119,9 +119,9 @@ class SimplePHP extends Connection {
     public function orWhere(Array $orWhere, String $condition = 'AND'): ?SimplePHP
     {
         $moreWhere = '';
-        foreach($orWhere as $enclosures) {
-            $split = isset($enclosures[3]) && !$enclosures[3] ? $enclosures[2] : "'".$enclosures[2]."'";
-            $moreWhere .= $enclosures[0]." ".$enclosures[1]." ".$split." {$condition} ";
+        foreach ($orWhere as $enclosures) {
+            $split = isset($enclosures[3]) && !$enclosures[3] ? $enclosures[2] : "'" . $enclosures[2] . "'";
+            $moreWhere .= $enclosures[0] . " " . $enclosures[1] . " " . $split . " {$condition} ";
         }
         $this->where .= " OR " . rtrim($moreWhere, " {$condition} ");
 
@@ -165,7 +165,7 @@ class SimplePHP extends Connection {
      */
     public function orderBy(String $prop, String $ordenation = 'ASC'): ?SimplePHP
     {
-        if(mb_strlen($this->order) < 9) {
+        if (mb_strlen($this->order) < 9) {
             $this->order = "ORDER BY {$prop} {$ordenation}";
         } else {
             $this->order .= ", {$prop} {$ordenation}";
@@ -179,7 +179,7 @@ class SimplePHP extends Connection {
      */
     public function groupBy(String $prop): ?SimplePHP
     {
-        if(mb_strlen($this->group) < 9) {
+        if (mb_strlen($this->group) < 9) {
             $this->group = "GROUP BY {$prop}";
         } else {
             $this->group .= ", {$prop}";
@@ -194,10 +194,10 @@ class SimplePHP extends Connection {
      */
     public function __call(String $name, $arguments) : ?SimplePHP
     {
-        if($name === 'skip')
+        if ($name === 'skip')
             return $this->offset($arguments[0]);
 
-        if($name === 'take')
+        if ($name === 'take')
             return $this->limit($arguments[0]);
 
         $this->writeLog("This method does not exist at the SimplePHP: \"<b>{$name}</b>\".");
@@ -221,7 +221,9 @@ class SimplePHP extends Connection {
     {
         if (!empty($this->excepts)) {
             foreach ($this->excepts as $except) {
-                if (isset($this->data[$except])) unset($this->data[$except]);
+                if (isset($this->data[$except])) {
+                    unset($this->data[$except]);
+                }
             }
         }
     }
