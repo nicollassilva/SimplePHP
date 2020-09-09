@@ -21,7 +21,7 @@ trait CRUD {
             $sql->bindParam(':primary', $primary);
             return $sql->execute();
         } catch (PDOException $exception) {
-            return $this->writeLog($exception->getCode(), true);
+            return $this->writeLog($exception->getMessage(), true);
         }
     }
 
@@ -31,7 +31,7 @@ trait CRUD {
      * @param int $primary
      * @return bool|null
      */
-    public function update(String $params, Array $values, Int $primary)
+    public function update(String $params, Array $values, Int $primary): ?bool
     {
         try {
         $params = explode(',', $params);
@@ -58,7 +58,7 @@ trait CRUD {
         }
         return $sql->execute();
         } catch(PDOException $exception) {
-            return $this->writeLog($exception->getCode(), true);
+            return $this->writeLog($exception->getMessage(), true);
         }
     }
 
@@ -67,7 +67,7 @@ trait CRUD {
      * @param array $values
      * @return bool|null
      */
-    public function insert(String $params, Array $values)
+    public function insert(String $params, Array $values): ?bool
     {
         try {
             $parameters = "(".$params.")";
@@ -84,7 +84,7 @@ trait CRUD {
                 }
             return $sql->execute();
         } catch(PDOException $exception) {
-            return $this->writeLog($exception->getCode(), true);
+            return $this->writeLog($exception->getMessage(), true);
         }
     }
 }

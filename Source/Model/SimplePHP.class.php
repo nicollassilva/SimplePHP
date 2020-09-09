@@ -274,14 +274,14 @@ class SimplePHP extends Connection {
         $this->deny();
         return !$this->count ? $this->data : $execute->rowCount();
         } catch (PDOException $exc) {
-            return $this->writeLog($exc->getCode(), true);
+            return $this->writeLog($exc->getMessage(), true);
         }
     }
 
     /**
      * @return null|bool
      */
-    public function destroy(): ?Boolean
+    public function destroy(): ?bool
     {
         $primary = $this->primary;
         if (!isset($this->data->$primary)) {
@@ -294,7 +294,7 @@ class SimplePHP extends Connection {
     /**
      * @return null|bool
      */
-    public function save(): ?Boolean
+    public function save(): ?bool
     {
         $primary = $this->primary;
         $data = json_decode(json_encode($this->data), true);
@@ -324,7 +324,7 @@ class SimplePHP extends Connection {
     /**
      * @return null|bool
      */
-    public function create(): ?Boolean
+    public function create(): ?bool
     {
         $request = $this->request;
         if (empty($request)) {
@@ -345,7 +345,8 @@ class SimplePHP extends Connection {
     {
         $log = new Logger('SimplePHP');
         $log->pushHandler(new StreamHandler($this->config["pathLog"], Logger::WARNING));
-        return !!$pdo ? $log->error($message) : $log->warning($message);
+        !!$pdo ? $log->error($message) : $log->warning($message);
+        return null;
     }
 
     /**
