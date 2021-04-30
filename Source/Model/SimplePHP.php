@@ -6,23 +6,21 @@ use SimplePHP\Root\{
     Connection,
     Functions
 };
+use SimplePHP\Traits\Properties;
+use SimplePHP\Model\ChildSimplePHP;
 use PDO,
     PDOException,
-    Exception,
-    Error,
     stdClass;
 use SimplePHP\Model\CRUD as Actions;
-use Monolog\{
-    Logger,
-    Handler\StreamHandler
-};
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 /**
  * Class SimplePHP
  * @package NicollasSilva\SimplePHP
  */
 class SimplePHP extends Connection {
-    use Actions, Functions;
+    use Actions, Functions, Properties;
 
     /** @var string */
     protected $sentence = '';
@@ -66,13 +64,37 @@ class SimplePHP extends Connection {
     /** @var string */
     protected $group;
 
+    /** @var object|null */
+    protected $childClass;
+
+    /** @var array */
+    private static $reservedWords = ['where', 'find', 'by'];
+
     /**
      * Get tablename of children model
      * @param string|null $tableName
      */
-    function __construct(String $tableName, String $primaryKey)
+    function __construct(String $tableName = null, String $primaryKey = null)
     {
-        parent::__construct(); $this->table = $tableName; $this->primary = $primaryKey;
+        $this->setRealTable()->setRealPrimary();
+
+        $this->childClass = new ChildSimplePHP(get_called_class());
+
+        if($tableName) $this->table = $tableName;
+
+        if($primaryKey) $this->primary = $primaryKey;
+    }
+
+    private function setRealTable() : ?SimplePHP
+    {
+        $this->table = $this->getTable() ?? strtolower($this->childClass->realName) . 's';
+        return $this;
+    }
+
+    private function setRealPrimary() : ?SimplePHP
+    {
+        $this->primary = $this->getPrimary() ?? 'id';
+        return $this;
     }
 
     /**
@@ -81,7 +103,8 @@ class SimplePHP extends Connection {
      */
     public function find(int $id = null): ?SimplePHP
     {
-        is_int($id) ? $this->whereRaw("id = {$id}") : null;
+        is_int($id) ? $this->where([[$this->primary, '=', $id]]) : null;
+
         return $this;
     }
 
@@ -92,9 +115,10 @@ class SimplePHP extends Connection {
      */
     public function where(Array $where, String $condition = 'AND'): ?SimplePHP
     {
-        foreach ($where as $enclosures) {
-            $split = isset($enclosures[3]) && !$enclosures[3] ? $enclosures[2] : "'" . $enclosures[2] . "'";
-            $this->where .= $enclosures[0] . " " . $enclosures[1] . " " . $split . " {$condition} ";
+        $this->where = '';
+        foreach($where as $enclosures) {
+            $split = isset($enclosures[3]) && !$enclosures[3] ? $enclosures[2] : "'".$enclosures[2]."'";
+            $this->where .= $enclosures[0]." ".$enclosures[1]." ".$split." {$condition} ";
         }
         $this->where = "WHERE " . rtrim($this->where, " {$condition} ");
 
@@ -119,9 +143,9 @@ class SimplePHP extends Connection {
     public function orWhere(Array $orWhere, String $condition = 'AND'): ?SimplePHP
     {
         $moreWhere = '';
-        foreach ($orWhere as $enclosures) {
-            $split = isset($enclosures[3]) && !$enclosures[3] ? $enclosures[2] : "'" . $enclosures[2] . "'";
-            $moreWhere .= $enclosures[0] . " " . $enclosures[1] . " " . $split . " {$condition} ";
+        foreach($orWhere as $enclosures) {
+            $split = isset($enclosures[3]) && !$enclosures[3] ? $enclosures[2] : "'".$enclosures[2]."'";
+            $moreWhere .= $enclosures[0]." ".$enclosures[1]." ".$split." {$condition} ";
         }
         $this->where .= " OR " . rtrim($moreWhere, " {$condition} ");
 
@@ -134,7 +158,7 @@ class SimplePHP extends Connection {
      */
     public function only(Array $params): ?SimplePHP
     {
-        $this->params = implode($params, ',');
+        $this->params = implode(',', $params);
         return $this;
     }
 
@@ -165,7 +189,7 @@ class SimplePHP extends Connection {
      */
     public function orderBy(String $prop, String $ordenation = 'ASC'): ?SimplePHP
     {
-        if (mb_strlen($this->order) < 9) {
+        if(mb_strlen($this->order) < 9) {
             $this->order = "ORDER BY {$prop} {$ordenation}";
         } else {
             $this->order .= ", {$prop} {$ordenation}";
@@ -179,7 +203,7 @@ class SimplePHP extends Connection {
      */
     public function groupBy(String $prop): ?SimplePHP
     {
-        if (mb_strlen($this->group) < 9) {
+        if(mb_strlen($this->group) < 9) {
             $this->group = "GROUP BY {$prop}";
         } else {
             $this->group .= ", {$prop}";
@@ -190,18 +214,23 @@ class SimplePHP extends Connection {
     /**
      * @param string $name
      * @param mixed $arguments
-     * @return null|SimplePHP
+     * @return Array|Null|SimplePHP
      */
-    public function __call(String $name, $arguments) : ?SimplePHP
+    public function __call(String $name, $arguments)
     {
-        if ($name === 'skip')
+        if($name === 'skip')
             return $this->offset($arguments[0]);
 
-        if ($name === 'take')
+        if($name === 'take')
             return $this->limit($arguments[0]);
 
-        $this->writeLog("This method does not exist at the SimplePHP: \"<b>{$name}</b>\".");
-        return null;
+        if($name === 'get')
+            return $this->execute();
+
+        if($name === 'first')
+            return $this->execute(true);
+
+        return $this->writeLog("This method does not exist at the SimplePHP: \"<b>{$name}</b>\".");
     }
 
     /**
@@ -221,9 +250,7 @@ class SimplePHP extends Connection {
     {
         if (!empty($this->excepts)) {
             foreach ($this->excepts as $except) {
-                if (isset($this->data[$except])) {
-                    unset($this->data[$except]);
-                }
+                if (isset($this->data[$except])) unset($this->data[$except]);
             }
         }
     }
@@ -273,14 +300,16 @@ class SimplePHP extends Connection {
     {
         $this->type = $type;
         try {
-            $execute = $this->conn->query("SELECT {$this->params} FROM {$this->table} {$this->where} {$this->group} {$this->order} {$this->limit} {$this->offset}");
+            if(!is_object(Connection::getConnection())) 
+                return $this->writeLog("Connection failed. Check your connection config and try again.", true);
+            
+            $execute = Connection::getConnection()->query("SELECT {$this->params} FROM {$this->table} {$this->where} {$this->group} {$this->order} {$this->limit} {$this->offset}");
             $execute->rowCount() > 1 ? 
                     $this->data = ($this->type ? $execute->fetchAll(PDO::FETCH_CLASS, static::class) : $execute->fetchAll(PDO::FETCH_ASSOC)) : $this->data = ($this->type ? $execute->fetchObject(static::class) : $execute->fetch(PDO::FETCH_ASSOC));
         $this->deny();
         return !$this->count ? $this->data : $execute->rowCount();
         } catch (PDOException $exc) {
-            $this->writeLog($exc->getMessage(), true);
-            return null;
+            return $this->writeLog($exc->getMessage(), true);
         }
     }
 
@@ -291,8 +320,7 @@ class SimplePHP extends Connection {
     {
         $primary = $this->primary;
         if (!isset($this->data->$primary)) {
-            $this->writeLog("The primary index was not found.");
-            return null;
+            return $this->writeLog("The primary index was not found.");
         }
 
         return $this->delete($this->data->$primary);
@@ -301,16 +329,14 @@ class SimplePHP extends Connection {
     /**
      * @return null|bool
      */
-    public function save(): ?bool
+    public function save()
     {
         $primary = $this->primary;
         $data = json_decode(json_encode($this->data), true);
         if (empty($primary) || !isset($data[$primary])) {
-            $this->writeLog("The primary index was not found.");
-            return null;
+            return $this->writeLog("The primary index was not found.");
         } else if (!$this->find($data[$primary])->execute()) {
-            $this->writeLog("The primary index was not found in the database.");
-            return null;
+            return $this->writeLog("The primary index was not found in the database.");
         }
 
         $otherPrimary = $data[$primary];
@@ -337,8 +363,7 @@ class SimplePHP extends Connection {
     {
         $request = $this->request;
         if (empty($request)) {
-            $this->writeLog("No information was passed to record.");
-            return null;
+            return $this->writeLog("No information was passed to record.");
         }
 
         $parameters = implode(',', array_keys($request));
@@ -351,12 +376,17 @@ class SimplePHP extends Connection {
      * @param string $message
      * @return null|Logger
      */
-    protected function writeLog($message, $pdo = false): ?Logger
+    protected function writeLog($message, $pdo = false): void
     {
         $log = new Logger('SimplePHP');
-        $log->pushHandler(new StreamHandler($this->config["pathLog"], Logger::WARNING));
-        !!$pdo ? $log->error($message) : $log->warning($message);
-        return null;
+        $log->pushHandler(new StreamHandler(self::$config["pathLog"], Logger::WARNING));
+
+        if($pdo) {
+            $log->error($message);
+            return;
+        }
+
+        $log->warning($message);
     }
 
     /**
@@ -375,5 +405,24 @@ class SimplePHP extends Connection {
     public function debugQuery(): String
     {
         return "SELECT {$this->params} FROM {$this->table} {$this->where} {$this->group} {$this->order} {$this->limit} {$this->offset}";
+    }
+
+    /**
+     * @return SimplePHP|null
+     */
+    public static function __callStatic($name, $arguments)
+    {
+        // if($name === 'find')
+        //     return (new Static)->find($arguments[0])->execute(true);
+    }
+
+    /**
+     * @return SimplePHP|null
+     */
+    public static function findByPrimary(Int $id) : ?SimplePHP
+    {
+        return (
+            new static()
+        )->find($id);
     }
 }
