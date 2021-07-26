@@ -1,6 +1,6 @@
 ﻿# Simple PHP - Simple and easy CRUD for PHP projects
  
- > OBS: This package was replaced by the [MinasORM](https://github.com/nicollassilvva/minasorm) package.
+ > OBS: This package was replaced by the [MinasORM](https://github.com/nicollassilva/minasorm) package.
 
 [![Maintainer](http://img.shields.io/badge/maintainer-@nicollassilva-blue.svg?style=flat-square)](https://github.com/nicollassilva)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/nicollassilva/SimplePHP/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/nicollassilva/SimplePHP/?branch=master)
