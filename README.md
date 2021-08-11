@@ -1,4 +1,4 @@
-﻿# Simple PHP - Simple and easy CRUD for PHP projects
+﻿# [DESCONTINUED] Simple PHP - Simple and easy CRUD for PHP projects
  
  > OBS: This package was replaced by the [MinasORM](https://github.com/nicollassilva/minasorm) package.
 
